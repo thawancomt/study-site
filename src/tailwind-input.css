@@ -1,0 +1,27 @@
+@import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+@theme {
+    --color-dark: hsl(210, 11%, 10%);
+    --color-dark-muted: hsl(210, 11%, 20%);
+
+    --color-over-dark: hsl(0, 0%, 95%);
+    --color-over-muted: hsl(0, 0%, 95%);
+}
+
+@utility text-neutral {
+    color: hsl(0, 0%, 85%);
+    @apply hover:text-neutral-300
+}
+
+body {
+    @apply bg-dark ;
+    font-family: "Manrope", sans-serif;
+    font-weight: 600;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-dark-muted) var(--color-dark);
+    scroll-padding: 10 10 10 10;
+}
