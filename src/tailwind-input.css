@@ -11,12 +11,11 @@
 
 @utility text-neutral {
     color: hsl(0, 0%, 85%);
-    @apply hover:text-neutral-300;
+    @apply hover:text-neutral-300
 }
 
 body {
     @apply bg-dark ;
-    font-family: "Manrope", sans-serif;
     font-weight: 600;
 }
 
@@ -24,8 +23,12 @@ body {
     scrollbar-width: thin;
     scrollbar-color: var(--color-dark-muted) var(--color-dark);
     scroll-padding: 10 10 10 10;
+    font-family: "Manrope", sans-serif;
 }
 
-@utility btn-muted {
-    @apply bg-dark-muted text-neutral hover:bg-dark p-2 shadow shadow-neutral-500 m-2;
+.logo {
+  @apply bg-gradient-to-t from-gray-600 to-gray-800 p-2 rounded-md
+  text-white/95
+  border-1 border-gray-600
 }
+

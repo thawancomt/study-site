@@ -5,7 +5,7 @@ export default class MongoDBSubjectRepo
 	implements IBaseRepository<NewSubject, SubjectsEntity>
 {
 	async create(entity: NewSubject): Promise<SubjectsEntity> {
-		return await fetch("http://localhost:8000/api/", {
+		return await fetch("http://localhost:8000/api/subjects", {
 			body: JSON.stringify(entity),
             headers :{
                 "Content-Type" : "application/json"
@@ -19,13 +19,8 @@ export default class MongoDBSubjectRepo
 
 	findById(id: string): Promise<SubjectsEntity | null> {}
 
-
-	async getByName(name : string) {
-		const result =  await fetch(`http://localhost:8000/api/${name}`, {
-			method: "GET"
-		}).then(res => res.json() )
-
-		if (result["results"]) {}
+	getByName(name: string) {
+		
 	}
 
 	update(

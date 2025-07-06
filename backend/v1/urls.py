@@ -1,9 +1,8 @@
 from django.urls import  path
 
-from v1.views import get, get_by_name, get_all
+from v1.views import NotesView, SubjectsView
 
 urlpatterns = [
-    path("api/", view=get),
-    path("api/<str:name>/", view=get_by_name),
-    path("api/all", view=get_all)
+    path("api/subjects", view=SubjectsView.as_view()),
+    path("api/notes", view=NotesView.as_view()),
 ]

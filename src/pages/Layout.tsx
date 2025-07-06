@@ -9,10 +9,7 @@ type AppLayoutProps = {
 export default function AppLayout({ children }: AppLayoutProps) {
 	return (
 		<div>
-			<Header/>
-            <Link to={"/create-subject"}>Subjects</Link>
-            <Link to={"/create-note"}>Notes</Link>
-            <Link to={"/"}>Home</Link>
+			<Header />
 			{children}
 		</div>
 	);

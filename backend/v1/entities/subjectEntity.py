@@ -1,5 +1,6 @@
-from typing import  TypedDict
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel
+
+from v1.utils.pyObjectID import PyObjectId
 
 
 class NewSubjectEntity(BaseModel):
@@ -9,6 +10,10 @@ class NewSubjectEntity(BaseModel):
 
 
 class SubjectEntity(BaseModel):
-    id: int
+    id: PyObjectId
     name: str
     description : str
+
+    model_config = {
+        "arbitrary_types_allowed" : True
+    }

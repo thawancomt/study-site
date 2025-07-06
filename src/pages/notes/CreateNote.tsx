@@ -1,11 +1,9 @@
 import { type ChangeEvent, useEffect, useRef, useState } from "react";
-import type { newNoteEntity } from "../ORM/notes/entities/notes.entity";
-import { ConcreteNoteRepository } from "../ORM/notes/implementations/notes.concrete.repository";
-import type { ConcreteNoteService } from "../ORM/notes/implementations/notes.concrete.service";
-import type { SubjectsEntity } from "../ORM/subjects/entities/subjects.entity";
-import { IndexDBSubjectRepository } from "../ORM/subjects/implementations/subjects.concrete.repository";
-import { SubjectsService } from "../ORM/subjects/implementations/subjects.concrete.service";
-import MongoDBSubjectRepo from "../ORM/subjects/implementations/subjectsMongoDB.concrete.repository";
+import type { NewNoteEntity } from "../../ORM/notes/entities/notes.entity";
+import type { ConcreteNoteService } from "../../ORM/notes/implementations/notes.concrete.service";
+import type { SubjectsEntity } from "../../ORM/subjects/entities/subjects.entity";
+import { SubjectsService } from "../../ORM/subjects/implementations/subjects.concrete.service";
+import MongoDBSubjectRepo from "../../ORM/subjects/implementations/subjectsMongoDB.concrete.repository";
 
 type CreateNoteProps = {
 	noteService: ConcreteNoteService;
@@ -16,39 +14,34 @@ const subjectService = new SubjectsService(MongoDBSubjectRepoW);
 
 export default function CreateNote({ noteService }: CreateNoteProps) {
 	const [subjects, setSubjects] = useState<SubjectsEntity[]>([]);
-    const [selectedSubjects, setSelectedSubjects] = useState<SubjectsEntity[]>([]);
+	const [selectedSubjects, setSelectedSubjects] = useState<SubjectsEntity[]>(
+		[],
+	);
 
-	const [note, setNote] = useState<newNoteEntity>({
+	const [note, setNote] = useState<NewNoteEntity>({
 		title: "",
 		note: "",
 		createdAt: new Date(),
 		updatedAt: new Date(),
-		subject: [],
+		subjects: [],
 	});
 
-
-    const selectInputRef = useRef<HTMLSelectElement>(null)
+	const selectInputRef = useRef<HTMLSelectElement>(null);
 
 	useEffect(() => {
 		subjectService.getAllSubjects().then((result) => {
-			setSubjects(result)			
+			setSubjects(result);
 		});
 	}, []);
 
-	function handleSaveNote() {
-		noteService
+	async function handleSaveNote() {
+		const result = await noteService
 			.addNote({
-                ...note, 
-                subject : selectedSubjects
-            })
-			.then((savedNote) => {
-				console.log(savedNote);
+				...note,
+				subjects: selectedSubjects.map(subject => subject.id),
 			})
-			.catch((error) => {
-				console.error("Error saving note:", error);
-			});
 
-            resetComponent()
+		return result;
 	}
 
 	function handleSelection(e: ChangeEvent<HTMLSelectElement>) {
@@ -62,21 +55,20 @@ export default function CreateNote({ noteService }: CreateNoteProps) {
 			newSelectedSubjects.push(subject);
 		});
 
-        console.log("Achados", newSelectedSubjects);
+		console.log("Achados", newSelectedSubjects);
 
-        setSelectedSubjects(newSelectedSubjects)
-        
+		setSelectedSubjects(newSelectedSubjects);
 	}
 
-    function resetComponent() {
-        setNote({
-            ...note,
-            note  : "",
-            title : ""
-        });
+	function resetComponent() {
+		setNote({
+			...note,
+			note: "",
+			title: "",
+		});
 
-        setSelectedSubjects([])
-    }
+		setSelectedSubjects([]);
+	}
 
 	return (
 		<form className="text-neutral bg-dark-muted">
@@ -86,12 +78,14 @@ export default function CreateNote({ noteService }: CreateNoteProps) {
 					id=""
 					multiple
 					className="w-full"
-                    ref={selectInputRef}
-                    value={selectedSubjects.map(subject => subject.name)}
+					ref={selectInputRef}
+					value={selectedSubjects.map((subject) => subject.name)}
 					onChange={handleSelection}
 				>
 					{Array.from(subjects).map((subject, index) => (
-						<option key={index} value={subject.name}>{subject.name}</option>
+						<option key={index} value={subject.name}>
+							{subject.name}
+						</option>
 					))}
 				</select>
 			</div>

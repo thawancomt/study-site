@@ -1,51 +1,72 @@
-from django.db.models.expressions import result
-from django.template.context_processors import request
-from django.urls import re_path
-from pydantic import ValidationError
+from typing import List
+
+from bson import ObjectId
+from pydantic import ValidationError, BaseModel
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from v1.entities.note_entity import NewNoteEntity
 from v1.entities.subjectEntity import SubjectEntity, NewSubjectEntity
+from v1.repositories.NotesRepo import NotesRepo
 from v1.repositories.subjectsRepo import SubjectRepo
+from v1.services.notes_services import NotesService
+from rest_framework.views import APIView
+
+from v1.services.subjects_services import SubjectsServices
 
 
-@api_view(["GET", "POST"])
-def get(request):
-    try:
-        newSubject = NewSubjectEntity(**request.data)
+class NotesView(APIView):
 
-        instanceOfRepo = SubjectRepo()
+    repo = NotesRepo()
+    subject_repo = SubjectRepo()
 
-        id =  instanceOfRepo.create(newSubject.model_dump())
+    service = NotesService(note_repo=repo, subjects_repo=subject_repo)
 
-        print(request.data)
-        return Response(newSubject.model_dump(mode="json") | {"id" : str(id)})
+    def get(self, req):
+        return Response(
+            self.service.get_all()
+        )
 
-    except ValidationError as e:
-        return Response({
-            "errors" : str(e.errors())
-        }, status=400)
+    def post(self, req):
+        try:
+            result_data = self.service.create_note_from_data(req.data)
 
-    return Response({"response": "ok"})
+            return Response(result_data.model_dump())
 
-@api_view(["GET", "POST"])
-def get_by_name(req, name):
-    instanceOfRepo = SubjectRepo()
-    result = instanceOfRepo.get_by_name(name=name)
-    if not result:
-        return  Response({}, status=404)
+        except ValidationError as e:
+            return Response({
+                "errors": str(e.errors())
+            }, status=400)
 
-    return (Response({
-        "results" : str(instanceOfRepo.get_by_name(name=name))
-    }))
-@api_view(["GET", "POST"])
-def get_all(req):
-    instanceOfRepo = SubjectRepo()
-    result = instanceOfRepo.get_all()
+    def delete(self):
+        pass
 
-    print(result)
+    def patch(self):
+        pass
+
+    def update(self):
+        pass
+
+class SubjectsView(APIView):
+    repo = SubjectRepo()
+
+    def get(self, req):
+
+        return Response(self.repo.get_all())
+
+    def post(self, req):
+        try:
+            new_subject = NewSubjectEntity(**req.data)
+
+            new_subject_id = self.repo.create(new_subject.model_dump())
+
+            print(req.data)
+            return Response(new_subject.model_dump(mode="json") | {"id": str(new_subject_id)})
+
+        except ValidationError as e:
+            return Response({
+                "errors": str(e.errors())
+            }, status=400)
 
 
-    return Response({
-        "results" : result
-    })
+

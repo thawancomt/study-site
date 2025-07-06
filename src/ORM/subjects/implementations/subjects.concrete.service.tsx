@@ -27,11 +27,11 @@ export class SubjectsService {
 	}
 
 	public async getAllSubjects() {
-		const result= await fetch("http://localhost:8000/api/all", {
+		const result : SubjectsEntity[] = await fetch("http://localhost:8000/api/subjects", {
 			method: "GET"
 		}).then(res => res.json())
 
-		const data = Array.from(result.results).map( doc => ({
+		const data = Array.from(result).map( doc => ({
 			"name" : doc.name, "description" : doc.description, "id" : doc.id
 		}))
 
