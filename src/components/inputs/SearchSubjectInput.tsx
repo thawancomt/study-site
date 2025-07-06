@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
 
 export default function SearchSubjectInput() {
-	const [showSearchResults, setShowSearchResults] = useState(true);
+	const [showSearchResults, setShowSearchResults] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
 
 	return (
@@ -26,9 +26,10 @@ export default function SearchSubjectInput() {
 						transition={{ duration: 0.2 }}
 					>
 						<ul className="flex bg-dark-muted/20 p-2 rounded-lg  *:border *:grow *:shrink-0 *:basis-[200px] overflow-x-auto">
-							<motion.li className="p-2 hover:bg-dark-muted rounded-lg"
+							<motion.li
+								className="p-2 hover:bg-dark-muted rounded-lg"
 								initial={{ opacity: 0, display: "none" }}
-								animate={{ opacity: 1, display: "flex"}}
+								animate={{ opacity: 1, display: "flex" }}
 								exit={{ opacity: 0, display: "none" }}
 								transition={{ duration: 0.3 }}
 							>
