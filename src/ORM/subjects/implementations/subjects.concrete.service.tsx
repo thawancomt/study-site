@@ -1,6 +1,5 @@
 import type { IBaseRepository } from "../../base/baseRepo";
 import type { NewSubject, SubjectsEntity } from "../entities/subjects.entity";
-import type { IndexDBSubjectRepository } from "./subjects.concrete.repository";
 
 export class SubjectsService {
 	constructor(private repository: IBaseRepository<NewSubject, SubjectsEntity>) {}
@@ -17,7 +16,6 @@ export class SubjectsService {
 				console.log(
 					"Subject" + savedNewSubject.name + " Com o ID:" + savedNewSubject.id,
 				);
-
 				return savedNewSubject;
 			})
 			.catch((error) => {

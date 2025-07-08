@@ -19,7 +19,14 @@ export default class MongoDBSubjectRepo
 
 	findById(id: string): Promise<SubjectsEntity | null> {}
 
-	getByName(name: string) {
+	async getByName(name: string) {
+		const query = `name=${name}` 
+
+		const result = await fetch(`http://localhost:8000/api/subjects?${query}`, {
+			method: "GET"
+		})
+
+		return result
 		
 	}
 

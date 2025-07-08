@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from v1.utils.pyObjectID import PyObjectId
 
@@ -10,7 +10,7 @@ class NewSubjectEntity(BaseModel):
 
 
 class SubjectEntity(BaseModel):
-    id: PyObjectId
+    id: PyObjectId = Field(alias="_id")
     name: str
     description : str
 

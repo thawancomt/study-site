@@ -1,4 +1,4 @@
-import type { SubjectsEntity } from "../../entities/subjects.entity";
+import type { SubjectsEntity } from "../../ORM/subjects/entities/subjects.entity";
 
 export default function SubjectListItem({ name, description }: SubjectsEntity) {
 	return <li>

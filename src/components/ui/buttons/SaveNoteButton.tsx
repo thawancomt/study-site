@@ -1,0 +1,30 @@
+
+interface SaveNoteButtonProps {
+	title: string;
+	callBack: () => void;
+	type: "success" | "alert" | "info";
+}
+
+const baseButtonStyles =
+	"rounded p-2 text-sm font-semibold shadow-sm transition-all duration-200 ease-in-out transform  flex basis-[20%] shrink-1 hover:basis-[80%] hover:justify-center";
+const buttonTypeStyles: Record<SaveNoteButtonProps["type"], string> = {
+	success: "bg-primary text-primary-foreground hover:bg-primary/90",
+	alert: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+	info: "bg-secondary text-secondary-foreground hover:bg-secondary/90",
+};
+
+export default function SaveNoteButton({
+	title,
+	callBack,
+	type,
+}: SaveNoteButtonProps) {
+	const combinedClasses = `${baseButtonStyles} ${buttonTypeStyles[type]}`;
+
+	return (
+		<button type="button" onClick={callBack} className={combinedClasses}
+
+        >
+			{title}
+		</button>
+	);
+}

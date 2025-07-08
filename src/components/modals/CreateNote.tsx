@@ -1,9 +1,12 @@
+import { pre, title } from "framer-motion/client";
 import { type ChangeEvent, useEffect, useRef, useState } from "react";
 import type { NewNoteEntity } from "../../ORM/notes/entities/notes.entity";
 import type { ConcreteNoteService } from "../../ORM/notes/implementations/notes.concrete.service";
 import type { SubjectsEntity } from "../../ORM/subjects/entities/subjects.entity";
 import { SubjectsService } from "../../ORM/subjects/implementations/subjects.concrete.service";
 import MongoDBSubjectRepo from "../../ORM/subjects/implementations/subjectsMongoDB.concrete.repository";
+import SaveNoteButton from "../ui/buttons/SaveNoteButton";
+import InputWithTextAndIcon from "../ui/inputs/TitleInput";
 
 type CreateNoteProps = {
 	noteService: ConcreteNoteService;
@@ -26,7 +29,6 @@ export default function CreateNote({ noteService }: CreateNoteProps) {
 		subjects: [],
 	});
 
-	const selectInputRef = useRef<HTMLSelectElement>(null);
 
 	useEffect(() => {
 		subjectService.getAllSubjects().then((result) => {
@@ -35,11 +37,10 @@ export default function CreateNote({ noteService }: CreateNoteProps) {
 	}, []);
 
 	async function handleSaveNote() {
-		const result = await noteService
-			.addNote({
-				...note,
-				subjects: selectedSubjects.map(subject => subject.id),
-			})
+		const result = await noteService.addNote({
+			...note,
+			subjects: []
+		});
 
 		return result;
 	}
@@ -71,47 +72,36 @@ export default function CreateNote({ noteService }: CreateNoteProps) {
 	}
 
 	return (
-		<form className="text-neutral bg-dark-muted">
-			<div>
-				<select
+		<div className="bg-accent-foreground/30 backdrop-blur-2xl w-[50vh] rounded shadow-lg shadow-dark">
+			<section className="border-accent">
+				<InputWithTextAndIcon
+					value={note.title}
+					setValue={(newValue) => {
+						setNote({
+							...note,
+							title: newValue,
+						});
+					}}
+				/>
+			</section>
+			<main className=" w-full flex justify-center p-2">
+				<textarea
+				value={note.note}
+				onChange={(e) => {
+					setNote( prev => ({
+						...prev,
+						note : e.target.value
+					}))
+				}}
 					name=""
 					id=""
-					multiple
-					className="w-full"
-					ref={selectInputRef}
-					value={selectedSubjects.map((subject) => subject.name)}
-					onChange={handleSelection}
-				>
-					{Array.from(subjects).map((subject, index) => (
-						<option key={index} value={subject.name}>
-							{subject.name}
-						</option>
-					))}
-				</select>
-			</div>
-
-			<label htmlFor="note-title">Title</label>
-			<input
-				type="text"
-				id="note-title"
-				className="border-neutral-50 border m-1 p-2 rounded"
-				value={note.title}
-				onChange={(e) => setNote({ ...note, title: e.target.value })}
-			/>
-
-			<label htmlFor="note-content">Content</label>
-			<textarea
-				id="note-content"
-				rows={10}
-				className="border-neutral-50 border m-1 p-2 rounded"
-				value={note.note}
-				onChange={(e) => setNote({ ...note, note: e.target.value })}
-			/>
-			<section>
-				<button type="button" className="btn-muted" onClick={handleSaveNote}>
-					Save note
-				</button>
-			</section>
-		</form>
+					className="w-[80vh]  focus:outline-none focus:border-none text-accent bg-sidebar-accent-foreground/70 p-4  rounded-md focus-within:ring-amber-300"
+				></textarea>
+			</main>
+			<footer className="w-full flex justify-end gap-4">
+				<SaveNoteButton title="Save" callBack={handleSaveNote} type={"info"}/>
+				<SaveNoteButton title="Discard" callBack={resetComponent} type={"alert"}/>
+			</footer>
+		</div>
 	);
 }

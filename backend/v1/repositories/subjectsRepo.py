@@ -1,6 +1,7 @@
 from django.db.models.expressions import result
 
 from v1.entities.subjectEntity import SubjectEntity, NewSubjectEntity
+from v1.exceptions.exceptions import NotRightEntity
 from v1.repositories.baseRepo import BaseRepo
 from bson.objectid import ObjectId
 
@@ -29,6 +30,9 @@ class SubjectRepo(BaseRepo):
 
     def get_by_id(self, id : ObjectId ) -> SubjectEntity | None :
 
+        if not isinstance(id, ObjectId):
+            raise NotRightEntity
+
         try:
             object_id = ObjectId(id)
             result = self.collection.find_one({"_id" : object_id})
@@ -37,7 +41,7 @@ class SubjectRepo(BaseRepo):
             print(f"Erro: O ID '{id}' não é um ObjectId válido. Retornando None.")
             return None
 
-        return result
+        return SubjectEntity(**result)
 
     def get_by_name(self, name):
         result = self.collection.find_one({"name" : name})

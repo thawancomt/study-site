@@ -23,6 +23,9 @@ class NotesView(APIView):
     service = NotesService(note_repo=repo, subjects_repo=subject_repo)
 
     def get(self, req):
+
+
+
         return Response(
             self.service.get_all()
         )
@@ -31,9 +34,11 @@ class NotesView(APIView):
         try:
             result_data = self.service.create_note_from_data(req.data)
 
-            return Response(result_data.model_dump())
+
+            return Response(result_data.model_dump(mode="json"))
 
         except ValidationError as e:
+            raise e
             return Response({
                 "errors": str(e.errors())
             }, status=400)
@@ -51,6 +56,17 @@ class SubjectsView(APIView):
     repo = SubjectRepo()
 
     def get(self, req):
+        query = req.query_params
+
+        if name_query := query.get("name"):
+            subject = self.repo.get_by_name(name_query)
+
+            if subject:
+
+                new_subject = SubjectEntity(**subject)
+                return Response(new_subject.model_dump(mode="json"))
+
+            return Response({"error" : "none object found"},status=404)
 
         return Response(self.repo.get_all())
 
@@ -60,13 +76,13 @@ class SubjectsView(APIView):
 
             new_subject_id = self.repo.create(new_subject.model_dump())
 
-            print(req.data)
             return Response(new_subject.model_dump(mode="json") | {"id": str(new_subject_id)})
 
         except ValidationError as e:
             return Response({
                 "errors": str(e.errors())
             }, status=400)
+
 
 
 

@@ -17,9 +17,9 @@ class NotesService(BaseService):
         self.subjects_repo = subjects_repo
 
     def create(self, new_note : NewNoteEntity) -> NoteEntity | None:
-        if self.repo.get(new_note.title): return None
+        if self.repo.get_by_name(new_note.title): return None
 
-        created_object = self.repo.create(newNote=new_note.model_dump())
+        created_object = self.repo.create(new_note=new_note)
 
         return created_object
 
@@ -38,19 +38,13 @@ class NotesService(BaseService):
         found_subjects: List[ObjectId] = []
 
         for subject_id in received_subjects_id:
-            if subjects_object := self.subjects_repo.get_by_id(subject_id):
-                temp_id = str(subjects_object["_id"])
-
-                subjects_object["id"] = temp_id
-
-                del subjects_object["_id"]
-
-                found_subjects.append(ObjectId(temp_id))
+            if subject_object := self.subjects_repo.get_by_id(subject_id):
+                found_subjects.append(ObjectId(subject_object.id))
             else:
                 raise SubjectNotFoundError()
 
         new_note = req_data.copy()
-        new_note["subjects"] = [str(s_id) for s_id in found_subjects]
+        new_note["subjects"] = found_subjects
 
         new_note_obj = NewNoteEntity(**new_note)
 

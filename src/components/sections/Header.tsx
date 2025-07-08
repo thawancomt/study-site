@@ -1,4 +1,4 @@
-import SearchSubjectInput from "../inputs/SearchSubjectInput";
+
 import AppLogo from "../logo";
 import SubjectNavBarLink from "../ui/SubjectNavBarLink";
 
@@ -20,7 +20,6 @@ export default function Header() {
 				</nav>
 			</section>
 
-			<SearchSubjectInput />
 		</header>
 	);
 }
