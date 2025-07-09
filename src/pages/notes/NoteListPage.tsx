@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NoteResumeCard from "../../components/cards/NoteResumeCard";
 import CreateNote from "../../components/modals/CreateNote";
 import type { NoteEntity } from "../../ORM/notes/entities/notes.entity";
@@ -15,14 +15,22 @@ export default function NotesPage() {
 	async function loadNotes() {
 		const result = await service.getAll();
 
-		console.log(result);
+		
+		for (let i = 1; i < result.length; i++) {
+			setTimeout(() => {
+				setNotes( (prev) => ([...prev, result[i]]))
 
-		setNotes(result);
+			}, 100 * i)
+		}
 	}
 
-	function removeById(noteID : string) {
-		setNotes(prev => prev.filter(note => note.id !== noteID))
+	function removeById(noteID: string) {
+		setNotes((prev) => prev.filter((note) => note.id !== noteID));
 	}
+
+	useEffect(() => {
+		loadNotes();
+	}, []);
 
 	return (
 		<>
@@ -34,16 +42,33 @@ export default function NotesPage() {
 			>
 				Carregar todas as notas
 			</button>
-			<AnimatePresence mode="popLayout" >
-				<motion.div className="grid grid-cols-2" layout>
+			<motion.div
+				className="grid grid-cols-2"
+				layout
+				initial={{
+					opacity: 0,
+				}}
+				animate={{
+					opacity: 1,
+				}}
+				transition={{
+					staggerChildren: 0.5,
+					duration: 2,
+				}}
+			>
+				<AnimatePresence mode="popLayout">
 					{notes &&
 						Array.from(notes).map((note) => (
-							<NoteResumeCard note={note} key={note.id} onRemove={ () => {
-								removeById(note.id)
-							}}/>
+							<NoteResumeCard
+								note={note}
+								key={note.id}
+								onRemove={() => {
+									removeById(note.id);
+								}}
+							/>
 						))}
-				</motion.div>
-			</AnimatePresence>
+				</AnimatePresence>
+			</motion.div>
 		</>
 	);
 }

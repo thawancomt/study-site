@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 
 interface SaveNoteButtonProps {
 	title: string;
@@ -6,7 +7,7 @@ interface SaveNoteButtonProps {
 }
 
 const baseButtonStyles =
-	"rounded p-2 text-sm font-semibold shadow-sm transition-all duration-200 ease-in-out transform  flex basis-[20%] shrink-1 hover:basis-[80%] hover:justify-center";
+	"rounded p-2 text-sm font-semibold shadow-sm transition-all duration-200 ease-in-out transform  flex basis-[20%] shrink-1 hover:basis-[30%] hover:justify-center";
 const buttonTypeStyles: Record<SaveNoteButtonProps["type"], string> = {
 	success: "bg-primary text-primary-foreground hover:bg-primary/90",
 	alert: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
@@ -21,10 +22,8 @@ export default function SaveNoteButton({
 	const combinedClasses = `${baseButtonStyles} ${buttonTypeStyles[type]}`;
 
 	return (
-		<button type="button" onClick={callBack} className={combinedClasses}
-
-        >
+		<motion.button type="button" onClick={callBack} className={combinedClasses}>
 			{title}
-		</button>
+		</motion.button>
 	);
 }
