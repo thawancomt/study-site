@@ -72,7 +72,7 @@ export default function CreateNote({ noteService }: CreateNoteProps) {
 	}
 
 	return (
-		<div className="bg-accent-foreground/30 backdrop-blur-2xl w-[50vh] rounded shadow-lg shadow-dark">
+		<div className="bg-accent-foreground/30 backdrop-blur-2xl w-[50vh] rounded shadow-lg shadow-dark border border-accent/20 p-2 hover:shadow-accent/10">
 			<section className="border-accent">
 				<InputWithTextAndIcon
 					value={note.title}
