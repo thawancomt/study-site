@@ -16,3 +16,7 @@ class BaseService(ABC):
     def __init__(self, repository_instance):
         self.repo = repository_instance()
 
+    @abstractmethod
+    def delete(self, item_id : ObjectId):
+        pass
+

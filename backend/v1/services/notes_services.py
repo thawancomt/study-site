@@ -61,3 +61,7 @@ class NotesService(BaseService):
 
     def get_all(self):
         return self.repo.get_all()
+
+    def delete(self, item_id: ObjectId):
+        return self.repo.delete(item_id)
+

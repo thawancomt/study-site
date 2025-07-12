@@ -1,6 +1,7 @@
 // src/components/cards/NoteResumeCard.jsx
 
-import { motion, number } from "framer-motion";
+import { motion } from "framer-motion";
+import { BookA, BookOpenText, Maximize, Minimize2, Trash } from "lucide-react";
 import { useRef, useState } from "react";
 import type { NoteEntity } from "../../ORM/notes/entities/notes.entity";
 import SaveNoteButton from "../ui/buttons/SaveNoteButton";
@@ -8,7 +9,8 @@ import Tip from "../ui/tip";
 
 interface noteResumeCardProps {
 	note: NoteEntity;
-	onRemove: () => void;
+	onDelete: () => void;
+	onReadOpen: () => void;
 }
 
 const cardVariants = {
@@ -19,7 +21,8 @@ const cardVariants = {
 
 export default function NoteResumeCard({
 	note,
-	onRemove,
+	onDelete,
+	onReadOpen,
 }: noteResumeCardProps) {
 	const parentRef = useRef<HTMLDivElement>(null);
 
@@ -29,7 +32,7 @@ export default function NoteResumeCard({
 		{ id: 2, description: "tgeste", name: "science" },
 		{ id: 3, description: "tgeste", name: "art" },
 	];
-    const DEFAULT_MAX_CHARS = 300
+	const DEFAULT_MAX_CHARS = 300;
 	const [maxChars, setMaxChars] = useState(DEFAULT_MAX_CHARS);
 
 	function handleExpandNote() {
@@ -41,6 +44,14 @@ export default function NoteResumeCard({
 		}
 	}
 
+	function handleDelete() {
+		onDelete();
+	}
+
+	function handleReadNote() {
+		onReadOpen();
+	}
+
 	return (
 		// 👇 The props initial="hidden" and animate="show" have been removed from here
 		<motion.div
@@ -48,11 +59,17 @@ export default function NoteResumeCard({
 			layout
 			variants={cardVariants}
 			exit={{ opacity: 0 }}
-			className="border-accent-foreground/30 bg-muted-foreground/80 text-accent-foreground p-2 border relative rounded-lg h-fit"
+			className="border-accent-foreground/30 bg-muted-foreground/80 hover:bg-muted-foreground/90 text-accent-foreground p-2 border relative rounded-lg h-fit"
+			whileHover={{
+				scale: 1.02,
+			}}
 		>
-			<section className="p-4 hover:bg-accent-foreground/30 bg-accent-foreground/40 mb-2 rounded-lg transition-all duration-300">
-				<h1 className="font-extrabold">{note.title}</h1>
-			</section>
+			<motion.section className="p-4 hover:bg-accent-foreground/30 bg-accent-foreground/40 mb-2 rounded-lg transition-all duration-300 flex gap-2 items-center justify-start group ">
+				<BookA className="group-hover:text-accent-foreground/90" />
+				<motion.h1 layout className="font-extrabold">
+					{note.title}
+				</motion.h1>
+			</motion.section>
 
 			{/* Text area */}
 			<section className="ml-4 border rounded-lg bg-accent-foreground ">
@@ -90,6 +107,7 @@ export default function NoteResumeCard({
 							callBack={handleExpandNote}
 							title="Expand"
 							type="info"
+							icon={<Maximize />}
 						/>
 					)
 				) : (
@@ -97,10 +115,23 @@ export default function NoteResumeCard({
 						callBack={handleExpandNote}
 						title="Minimize"
 						type="info"
+						icon={<Minimize2 />}
 					/>
 				)}
-				<SaveNoteButton callBack={() => {}} title="Read" type="success" />
-				<SaveNoteButton callBack={onRemove} title="Delete" type="alert" />
+				<SaveNoteButton
+					callBack={handleReadNote}
+					title="Read"
+					type="success"
+					icon={<BookOpenText className="w-4 h-4" />}
+				/>
+				<SaveNoteButton
+					callBack={handleDelete}
+					title="Delete"
+					type="alert"
+					icon={
+						<Trash className="w-4 h-4 hover:rotate-12 transition-all duration-300" />
+					}
+				/>
 			</motion.section>
 		</motion.div>
 	);

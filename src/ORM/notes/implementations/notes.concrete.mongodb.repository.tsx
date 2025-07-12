@@ -19,13 +19,34 @@ export default class MongoDBNotesRepo implements INoteRepository {
         return result.json()
 	}
 
-	delete(id: string): Promise<boolean> {}
+	async delete(id: string): Promise<boolean> {
+		const result = await fetch("http://localhost:8000/api/notes", {
+			method: "DELETE",
+			headers : {
+				"Content-Type" : "application/json"
+			},
+			body : JSON.stringify({
+				id : id 
+			})
+		})
 
-	findById(id: string): Promise<NoteEntity | null> {}
+		if (result.ok) {
+			console.log( await result.json());
+		}
+		
+		return !!result
+
+	}
+
+	findById(id: string): Promise<NoteEntity | null> {
+		throw new Error
+	}
 
 	getByName(name: string) {}
 
-	update(id: string, entity: Partial<NoteEntity>): Promise<NoteEntity | null> {}
+	update(id: string, entity: Partial<NoteEntity>): Promise<NoteEntity | null> {
+		throw new Error
+	}
 
 	public async getAllNotes() {
 		const result = await fetch("http://localhost:8000/api/notes", {

@@ -24,11 +24,11 @@ class BaseRepo(ABC):
         pass
 
     @abstractmethod
-    def delete(self):
+    def delete(self, *args, **kwargs):
         return
 
     @abstractmethod
-    def update(self):
+    def update(self, *args, **kwargs):
         return
 
     @abstractmethod

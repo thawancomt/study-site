@@ -2,76 +2,92 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import InsightCardForNoteListPage from "../../components/cards/InsightCardForNoteListPage";
 import NoteResumeCard from "../../components/cards/NoteResumeCard";
 import CreateNote from "../../components/modals/CreateNote";
+import ReadNoteModal from "../../components/modals/ReadNoteModal";
 import NotesSearchInput from "../../components/ui/inputs/NotesSearchInput";
+import { useNoteContext } from "../../contextProcessors/NotesServiceContext";
+import { useNoteModal } from "../../contextProcessors/ReadNoteModalContext";
 import type { NoteEntity } from "../../ORM/notes/entities/notes.entity";
-import MongoDBNotesRepo from "../../ORM/notes/implementations/notes.concrete.mongodb.repository";
-import { ConcreteNoteService } from "../../ORM/notes/implementations/notes.concrete.service";
 
 const containerVariants = {
 	hidden: { opacity: 0 },
 	show: {
 		opacity: 1,
 		transition: {
-			staggerChildren: 0.1,
+			staggerChildren: 0.2,
+			delayChildren: 0.2,
 		},
 	},
 };
 
+export function countWords(notes) {
+	return notes.reduce((total, item) => {
+		const words = item.note.split(" ").length;
+		return total + words;
+	}, 0);
+}
+
+export function mostUsedWord(notes) {
+	const wordDict = {};
+
+	notes.map((notes) => {
+		const words = notes.note.split(" ");
+
+		words.map((word) => {
+			if (word === "") {
+			} else {
+				wordDict[word] = (wordDict?.[word] || 0) + 1;
+			}
+		});
+	});
+
+	return Object.keys(wordDict).reduce((max, currWord) => {
+		return wordDict[currWord] > wordDict[max] ? currWord : max;
+	}, 0);
+}
+
 export default function NotesPage() {
+	const [loaded, setLoaded] = useState(false);
 	const [notes, setNotes] = useState<NoteEntity[]>([]);
+	const [noteSearchQuery, setNoteSearchQuery] = useState("");
+	const [showModal, setShowModal] = useState(false);
+
+	const { note: modalNote, setNote: setModalNote } = useNoteModal();
 
 	// Note: It's often better to initialize these outside the component
 	// or use useMemo to avoid re-creating them on every render.
-	const notesRepo = new MongoDBNotesRepo();
-	const service = new ConcreteNoteService(notesRepo);
+	const { service } = useNoteContext();
 
 	async function loadNotes() {
 		const result = await service.getAll();
 		setNotes(result);
 	}
 
-	function removeById(noteID: string) {
-		setNotes((prev) => prev.filter((note) => note.id !== noteID));
-	}
-
 	useEffect(() => {
 		loadNotes();
+		setTimeout(() => {
+			setLoaded(true);
+		}, 50);
 	}, []);
 
+	useEffect(() => {
+		console.log(noteSearchQuery);
+	}, [noteSearchQuery]);
 
-    function countWords() {
-        return notes.reduce((total, item) => {
-            const words = item.note.split(" ").length
-            return total + words
-        }, 0)
-    }
+	function handleDelete(id: string) {
+		service.removeNote(id);
+	}
 
-    function mostUsedWord() {
-        const wordDict = {
-        }
-
-        notes.map((notes) => {
-            const words = notes.note.split(" ")
-
-            words.map((word) => {
-                if (word === "") {
-                } else {
-                    wordDict[word] = ( wordDict?.[word] || 0) + 1
-                }
-            })
-        })
-
-
-        return Object.keys(wordDict).reduce((max, currWord) => {
-            return wordDict[currWord] > wordDict[max] ? currWord : max
-        }, 0)
-    }
+	function handleOpenModal(note: NoteEntity) {
+		setModalNote(note);
+		setShowModal(true);
+	}
 
 	return (
 		<>
-			
 			<section className="hover:bg-accent-foreground rounded-lg p-4 border border-accent/20 my-2 mx-4">
 				<h1 className="text-background text-lg">My Notes</h1>
 				<span className="text-md text-background/30">
@@ -79,38 +95,59 @@ export default function NotesPage() {
 				</span>
 			</section>
 
-			<section className="hover:bg-accent-foreground rounded-lg p-4 border border-accent/20 my-2 mx-4">
-				<div className="bg-gradient-to-b from-chart-2/40 to-chart-3 p-4 rounded-2xl border hover:to-chart-2 hover:from-chart-3 border-accent-foreground w-fit shadow-lg hover:shadow-chart-3/30">
-					<h1 className="text-accent">Notes: {notes.length}</h1>
-				</div>
-                <div className="bg-gradient-to-b from-chart-2/40 to-chart-3 p-4 rounded-2xl border hover:to-chart-2 hover:from-chart-3 border-accent-foreground w-fit shadow-lg hover:shadow-chart-3/30">
-					<h1 className="text-accent">Words: {countWords()}</h1>
-				</div>
-                <div className="bg-gradient-to-b from-chart-2/40 to-chart-3 p-4 rounded-2xl border hover:to-chart-2 hover:from-chart-3 border-accent-foreground w-fit shadow-lg hover:shadow-chart-3/30">
-					<h1 className="text-accent">Most used word: "{mostUsedWord()}"</h1>
-				</div>
-			</section>
+			{/* Insights from notes */}
+			{loaded && (
+				<motion.section
+					className="hover:bg-accent-foreground rounded-lg p-4 border border-accent/20 my-2 mx-4 flex  gap-4 *:grow  "
+					variants={containerVariants}
+					initial="hidden"
+					animate="show"
+				>
+					<InsightCardForNoteListPage
+						colorVariant="yellow"
+						title="Typed words"
+						value={`${countWords(notes)}`}
+					/>
+					<InsightCardForNoteListPage
+						colorVariant="green"
+						title="Total notes"
+						value={`${notes.length}`}
+					/>
+					<InsightCardForNoteListPage
+						colorVariant="purple"
+						title="Most used words"
+						value={`"${mostUsedWord(notes)}"`}
+					/>
+				</motion.section>
+			)}
 
 			<AnimatePresence mode="popLayout">
 				<motion.div
-					className="flex border p-4 m-1 rounded-2xl bg-accent-foreground/80 border-accent/10 gap-2"
+					className="flex flex-wrap border p-4 m-1 rounded-2xl bg-accent-foreground/80 border-accent/10 gap-2 *:grow *:max-w-1/2 "
 					layout
 					variants={containerVariants}
 					initial="hidden"
-					animate={notes.length > 0 ? "show" : "hidden"}
+					animate={loaded ? "show" : "hidden"}
 				>
-                <div className={"w-full"}>
-				    <NotesSearchInput />
-                </div>
+					<div className={"!w-full !max-w-full "}>
+						<NotesSearchInput onTyping={setNoteSearchQuery} />
+					</div>
 
 					{notes.length && notes.length ? (
-						notes.map((note) => (
-							<NoteResumeCard
-								note={note}
-								key={note.id}
-								onRemove={() => removeById(note.id)}
-							/>
-						))
+						notes
+							.filter((note) => note.note.includes(noteSearchQuery))
+							.map((note) => (
+								<NoteResumeCard
+									note={note}
+									key={note.id}
+									onDelete={() => {
+										handleDelete(note.id);
+									}}
+									onReadOpen={() => {
+										handleOpenModal(note);
+									}}
+								/>
+							))
 					) : (
 						<div>
 							<h1 className="text-white">No notes</h1>
@@ -126,6 +163,18 @@ export default function NotesPage() {
 			>
 				Carregar todas as notas
 			</button>
+			{createPortal(
+				<AnimatePresence>
+					{showModal && (
+						<ReadNoteModal
+							onClose={() => {
+								setShowModal(false);
+							}}
+						/>
+					)}
+				</AnimatePresence>,
+				document.body,
+			)}
 		</>
 	);
 }

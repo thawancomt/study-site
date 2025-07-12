@@ -1,4 +1,5 @@
 from typing import List
+from xmlrpc.client import Boolean
 
 from bson import ObjectId
 from pydantic import ValidationError, BaseModel
@@ -33,8 +34,6 @@ class NotesView(APIView):
     def post(self, req):
         try:
             result_data = self.service.create_note_from_data(req.data)
-
-
             return Response(result_data.model_dump(mode="json"))
 
         except ValidationError as e:
@@ -43,8 +42,14 @@ class NotesView(APIView):
                 "errors": str(e.errors())
             }, status=400)
 
-    def delete(self):
-        pass
+    def delete(self, req):
+        result = Boolean()
+        if id_obj := ObjectId.is_valid(req.data.get("id")):
+            result = self.service.delete(ObjectId(req.data.get("id")))
+
+        return  Response({
+            "message" : result
+        })
 
     def patch(self):
         pass

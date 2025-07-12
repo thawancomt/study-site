@@ -1,4 +1,6 @@
+from getpass import fallback_getpass
 
+from bson import ObjectId
 from pymongo.results import InsertOneResult
 
 from v1.entities.note_entity import NewNoteEntity, NoteEntity
@@ -52,12 +54,19 @@ class NotesRepo(BaseRepo):
                 "subjects" : [ SubjectRepo().get_by_id( str(subject_id ) ).model_dump(mode="json") for subject_id in note.get("subjects") if note.get("subjects") and subject_id not in []]
         } for note in all_notes]
 
-    def delete(self):
-        pass
+    def delete(self, note_id : ObjectId):
+        print(note_id)
+        result = self.collection.find_one({"_id" : note_id})
+        return True if result else False
 
 
-    def update(self):
-        pass
+    def update(self, new_data : NoteEntity):
+        updated = self.collection.find_one_and_update(
+            filter={"_id" : new_data.id},
+            update=new_data.model_dump(mode="python")
+        )
+
+        return  updated
 
     def get_by_name(self, name):
         return self.collection.find_one({"title" : f"{str(name).strip()}"})
