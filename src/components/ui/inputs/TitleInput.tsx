@@ -11,13 +11,13 @@ interface InputProps {
 const containerVariants = {
 	initial: {
 		opacity: 0,
-		x: 33,
+		y: -33,
 		borderWidth: 2,
 		borderColor: "hsl(100, 30%, 0%)",
 	},
 	animate: {
 		opacity: 1,
-		x: 0,
+		y: 0,
 		borderColor: "hsl(100, 30%, 30%)",
 	},
 	transition: {
