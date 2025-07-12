@@ -28,7 +28,7 @@ class BaseRepo(ABC):
         return
 
     @abstractmethod
-    def update(self, *args, **kwargs):
+    def put(self, *args, **kwargs):
         return
 
     @abstractmethod

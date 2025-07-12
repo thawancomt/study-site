@@ -31,7 +31,7 @@ class SubjectRepo(BaseRepo):
     def get_by_id(self, id : ObjectId ) -> SubjectEntity | None :
 
         if not isinstance(id, ObjectId):
-            raise NotRightEntity
+            raise NotRightEntity(f"Expected ObjectId got {type(id)}")
 
         try:
             object_id = ObjectId(id)
@@ -60,7 +60,7 @@ class SubjectRepo(BaseRepo):
     def delete(self):
         pass
 
-    def update(self):
+    def put(self):
         pass
 
 

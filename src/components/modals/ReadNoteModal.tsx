@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
-import { Save, X } from "lucide-react";
+import { CloudCheck, Save, X } from "lucide-react";
 import { useState } from "react";
+import { useNoteContext } from "../../contextProcessors/NotesServiceContext";
 import { useNoteModal } from "../../contextProcessors/ReadNoteModalContext";
 import { countWords } from "../../pages/notes/NoteListPage";
 import SaveNoteButton from "../ui/buttons/SaveNoteButton";
@@ -12,9 +13,29 @@ interface ReadNoteModalProps {
 export default function ReadNoteModal({ onClose }: ReadNoteModalProps) {
 	const { note, setNote } = useNoteModal();
 	const [noteContent, setNoteContent] = useState(note.note);
-	const handleSave = () => {
-		console.log("noteContent", noteContent);
+
+	const [icon, setIcon] = useState(<Save key={"saveIconOnReadModal"}/>);
+
+	const { service, notes, setNotes } = useNoteContext();
+
+	const handleSave = async () => {
+		const updated_note = await service.modifyNote(note.id, note);
+
+		if (!updated_note) {
+			return;
+		}
+
+		setNotes(
+			notes.map((note_item) => {
+				if (note_item.id === note.id) {
+					return updated_note;
+				} else return note_item;
+			}),
+		);
+		setIcon(<CloudCheck />);
+		setTimeout(onClose, 800);
 	};
+
 	return (
 		<motion.div
 			className="w-screen h-screen bg-accent-foreground/60 backdrop-blur-2xl fixed inset-0 flex justify-center items-center"
@@ -68,24 +89,21 @@ export default function ReadNoteModal({ onClose }: ReadNoteModalProps) {
 				<div className="flex flex-col gap-4">
 					<textarea
 						value={noteContent}
-						onChange={
-							(e) => {
-                                setNote( prev => ({
-                                    ...prev,
-                                    note : e.target.value
-
-                                }))
-                                setNoteContent(e.target.value)
-                            }
-						}
+						onChange={(e) => {
+							setNote((prev) => ({
+								...prev,
+								note: e.target.value,
+							}));
+							setNoteContent(e.target.value);
+						}}
 						className="h-64"
 					/>
 					<div>
 						<SaveNoteButton
-							callBack={() => {}}
+							callBack={handleSave}
 							title="Save"
 							type="success"
-							icon={<Save></Save>}
+							icon={icon}
 						/>
 					</div>
 				</div>

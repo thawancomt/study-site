@@ -6,7 +6,7 @@ from pydantic import ValidationError, BaseModel
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from v1.entities.note_entity import NewNoteEntity
+from v1.entities.note_entity import NewNoteEntity, NoteEntity
 from v1.entities.subjectEntity import SubjectEntity, NewSubjectEntity
 from v1.repositories.NotesRepo import NotesRepo
 from v1.repositories.subjectsRepo import SubjectRepo
@@ -25,7 +25,13 @@ class NotesView(APIView):
 
     def get(self, req):
 
+        if query_id := req.GET.get("id") :
+            note_obj = self.repo.get_by_id(query_id)
 
+
+            return Response(
+                NoteEntity(**note_obj).model_dump(mode="json") if note_obj else {}
+            )
 
         return Response(
             self.service.get_all()
@@ -54,8 +60,20 @@ class NotesView(APIView):
     def patch(self):
         pass
 
-    def update(self):
-        pass
+    def put(self, req):
+        req.data["subjects"] = []
+        try:
+            updated_entity = NoteEntity(**req.data)
+            result = NoteEntity(**self.repo.put(updated_entity))
+
+            return Response(
+                result.model_dump(mode="json"))
+        except Exception as e:
+            raise e
+
+        return Response({
+            "message" : "not found object"
+        })
 
 class SubjectsView(APIView):
     repo = SubjectRepo()

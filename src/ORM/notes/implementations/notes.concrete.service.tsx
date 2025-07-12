@@ -24,7 +24,7 @@ export class ConcreteNoteService implements INoteService {
 		return false;
 	}
 
-	getAll() : NoteEntity[] {
-		return this.noteRepository.getAllNotes()
+	getAll(): NoteEntity[] {
+		return this.noteRepository.getAllNotes();
 	}
 }

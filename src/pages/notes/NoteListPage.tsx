@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import InsightCardForNoteListPage from "../../components/cards/InsightCardForNoteListPage";
 import NoteResumeCard from "../../components/cards/NoteResumeCard";
-import CreateNote from "../../components/modals/CreateNote";
+import CreateNoteFluent from "../../components/modals/CreateNoteButton";
+import CreateNote from "../../components/modals/CreateNoteModal";
 import ReadNoteModal from "../../components/modals/ReadNoteModal";
 import NotesSearchInput from "../../components/ui/inputs/NotesSearchInput";
 import { useNoteContext } from "../../contextProcessors/NotesServiceContext";
@@ -51,7 +52,6 @@ export function mostUsedWord(notes) {
 
 export default function NotesPage() {
 	const [loaded, setLoaded] = useState(false);
-	const [notes, setNotes] = useState<NoteEntity[]>([]);
 	const [noteSearchQuery, setNoteSearchQuery] = useState("");
 	const [showModal, setShowModal] = useState(false);
 
@@ -59,7 +59,7 @@ export default function NotesPage() {
 
 	// Note: It's often better to initialize these outside the component
 	// or use useMemo to avoid re-creating them on every render.
-	const { service } = useNoteContext();
+	const { service, notes, setNotes } = useNoteContext();
 
 	async function loadNotes() {
 		const result = await service.getAll();
@@ -74,6 +74,10 @@ export default function NotesPage() {
 	}, []);
 
 	useEffect(() => {
+		console.log(service.getNoteById(modalNote.id));
+	}, [showModal]);
+
+	useEffect(() => {
 		console.log(noteSearchQuery);
 	}, [noteSearchQuery]);
 
@@ -86,9 +90,17 @@ export default function NotesPage() {
 		setShowModal(true);
 	}
 
+	function updateNoteInContext(note: NoteEntity) {
+		notes.map((item) => {
+			if (item.id === note.id) {
+				return note;
+			} else return item;
+		});
+	}
+
 	return (
 		<>
-			<section className="hover:bg-accent-foreground rounded-lg p-4 border border-accent/20 my-2 mx-4">
+			<section className="hover:bg-accent-foreground rounded-lg p-4 border border-accent/20 m-1">
 				<h1 className="text-background text-lg">My Notes</h1>
 				<span className="text-md text-background/30">
 					Visualize your notes, edit it or create new ones...
@@ -98,7 +110,7 @@ export default function NotesPage() {
 			{/* Insights from notes */}
 			{loaded && (
 				<motion.section
-					className="hover:bg-accent-foreground rounded-lg p-4 border border-accent/20 my-2 mx-4 flex  gap-4 *:grow  "
+					className="hover:bg-accent-foreground rounded-lg p-4 border border-accent/20 m-1 flex  gap-4 *:grow  "
 					variants={containerVariants}
 					initial="hidden"
 					animate="show"
@@ -123,7 +135,7 @@ export default function NotesPage() {
 
 			<AnimatePresence mode="popLayout">
 				<motion.div
-					className="flex flex-wrap border p-4 m-1 rounded-2xl bg-accent-foreground/80 border-accent/10 gap-2 *:grow *:max-w-1/2 "
+					className="flex flex-wrap border p-4 m-1 rounded-2xl bg-accent-foreground/80 border-accent/10 gap-2 *:grow *:max-w-1/2  "
 					layout
 					variants={containerVariants}
 					initial="hidden"
@@ -135,7 +147,15 @@ export default function NotesPage() {
 
 					{notes.length && notes.length ? (
 						notes
-							.filter((note) => note.note.includes(noteSearchQuery))
+							.filter(
+								(note) =>
+									note.note
+										.toLocaleLowerCase()
+										.includes(noteSearchQuery.toLocaleLowerCase()) ||
+									note.title
+										.toLocaleLowerCase()
+										.includes(noteSearchQuery.toLocaleLowerCase()),
+							)
 							.map((note) => (
 								<NoteResumeCard
 									note={note}
@@ -155,7 +175,7 @@ export default function NotesPage() {
 					)}
 				</motion.div>
 			</AnimatePresence>
-			<CreateNote noteService={service} />
+
 			<button
 				type="button"
 				className="text-white bg-dark-muted p-2 rounded-md"
@@ -175,6 +195,8 @@ export default function NotesPage() {
 				</AnimatePresence>,
 				document.body,
 			)}
+
+			<CreateNoteFluent />
 		</>
 	);
 }

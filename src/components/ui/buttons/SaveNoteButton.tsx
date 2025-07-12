@@ -1,12 +1,12 @@
-import { motion, scale } from "framer-motion";
+import { AnimatePresence, motion, scale } from "framer-motion";
 import { Sparkles } from "lucide-react";
-import React, { type ReactNode } from "react";
+import React, { type ReactNode, useEffect, useState } from "react";
 
 interface SaveNoteButtonProps {
 	title: string;
 	callBack: () => void;
 	type: "success" | "alert" | "info";
-	icon?: ReactNode;
+	icon?: ReactNode & { type: { name: string } };
 }
 
 const baseButtonStyles =
@@ -21,27 +21,54 @@ export default function SaveNoteButton({
 	title,
 	callBack,
 	type,
-	icon
+	icon,
 }: SaveNoteButtonProps) {
 	const combinedClasses = `${baseButtonStyles} ${buttonTypeStyles[type]}`;
+	const [animate, setAnimate] = useState(0);
 
-	
 
 	return (
 		<motion.button
 			type="button"
 			onClick={callBack}
 			whileHover={{
-				scale : 1.02
+				scale: 1.02,
 			}}
-
-			transition={{
-			}}
-
+			transition={{}}
 			className={combinedClasses + "flex items-center gap-2"}
 		>
-			{icon ? icon: <Sparkles />}
-			{title}
+			<AnimatePresence mode="wait">
+				<motion.div
+					key={animate}
+					initial={{
+						rotate: 30,
+						y: 4,
+					}}
+					animate={{
+						rotate: 0,
+						y: 0,
+					}}
+					exit={{
+						rotate: 60,
+						y: 4,
+					}}
+					transition={{
+						type: "spring",
+						duration: 0.5,
+					}}
+				>
+					{icon ?? <Sparkles />}
+				</motion.div>
+			</AnimatePresence>
+			<motion.span
+				initial={{
+					opacity: 0,
+
+				}}
+				animate={{
+					opacity: 1
+				}}
+			>{title}</motion.span>
 		</motion.button>
 	);
 }
