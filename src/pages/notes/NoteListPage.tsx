@@ -90,13 +90,7 @@ export default function NotesPage() {
 		setShowModal(true);
 	}
 
-	function updateNoteInContext(note: NoteEntity) {
-		notes.map((item) => {
-			if (item.id === note.id) {
-				return note;
-			} else return item;
-		});
-	}
+	
 
 	return (
 		<>

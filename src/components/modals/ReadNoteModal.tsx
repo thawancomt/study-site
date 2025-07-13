@@ -16,22 +16,12 @@ export default function ReadNoteModal({ onClose }: ReadNoteModalProps) {
 
 	const [icon, setIcon] = useState(<Save key={"saveIconOnReadModal"}/>);
 
-	const { service, notes, setNotes } = useNoteContext();
+	const { updateNoteOnContext : contextUpdateNote } = useNoteContext();
 
 	const handleSave = async () => {
-		const updated_note = await service.modifyNote(note.id, note);
+		
+		contextUpdateNote(note.id, note)
 
-		if (!updated_note) {
-			return;
-		}
-
-		setNotes(
-			notes.map((note_item) => {
-				if (note_item.id === note.id) {
-					return updated_note;
-				} else return note_item;
-			}),
-		);
 		setIcon(<CloudCheck />);
 		setTimeout(onClose, 800);
 	};

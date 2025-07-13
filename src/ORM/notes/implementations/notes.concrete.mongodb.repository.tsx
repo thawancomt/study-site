@@ -1,4 +1,3 @@
-import type { IBaseRepository } from "../../base/baseRepo";
 import type { NewNoteEntity, NoteEntity } from "../entities/notes.entity";
 import type { INoteRepository } from "../interfaces/notes.repository";
 
@@ -38,18 +37,18 @@ export default class MongoDBNotesRepo implements INoteRepository {
 	}
 
 	async findById(id: string): Promise<NoteEntity | null> {
-		const query = `id=${id}`
+		const query = `id=${id}`;
 		const result = await fetch(`http://localhost:8000/api/notes?${query}`, {
 			method: "GET",
-		})
+		});
 
 		if (result.ok) {
-			const data = await result.json()
+			const data = await result.json();
 			console.log("data", data);
-			
-			return data
+
+			return data;
 		} else {
-			throw Error("got an error while fetching the id")
+			throw Error("got an error while fetching the id");
 		}
 	}
 
@@ -65,7 +64,7 @@ export default class MongoDBNotesRepo implements INoteRepository {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(entity),
-		}).then(async (res) => res.json());                      
+		}).then(async (res) => res.json());
 
 		return result;
 	}
