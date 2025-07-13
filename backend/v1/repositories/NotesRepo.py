@@ -1,4 +1,4 @@
-
+from typing import Iterable
 
 from bson import ObjectId
 from pymongo.results import InsertOneResult
@@ -6,9 +6,7 @@ from pymongo.results import InsertOneResult
 from v1.entities.note_entity import NewNoteEntity, NoteEntity
 from v1.exceptions.exceptions import NotRightEntity
 from v1.repositories.baseRepo import BaseRepo
-from v1.repositories.subjectsRepo import SubjectRepo
 from pymongo import ReturnDocument
-from typing import List
 from pymongo.cursor import Cursor
 
 class NotesRepo(BaseRepo):
@@ -17,44 +15,19 @@ class NotesRepo(BaseRepo):
     def __init__(self):
         super().__init__()
 
-    def create(self, new_note : NewNoteEntity) -> InsertOneResult:
+    def create(self, new_note : NewNoteEntity) -> ObjectId | None:
 
-        if (not isinstance(new_note, NewNoteEntity)):
-            raise NotRightEntity
+        if not isinstance(new_note, NewNoteEntity):
+            raise NotRightEntity(f"Expected a NewNoteEntity, got: f{type(new_note)}")
 
-
-        return self.collection.insert_one(new_note.model_dump(mode="python"))
-
-
-    def get_all(self):
-        all_notes : Cursor[NoteEntity] = self.collection.find({})
+        result = self.collection.insert_one(new_note.model_dump(mode="python"))
+        return result.inserted_id if result else None
 
 
-        subjects_id_set = set()
+    def get_all(self) -> Iterable[dict]:
+        all_notes = self.collection.find({})
 
-        for note in all_notes:
-            if note.get("subjects"):
-                for subject_id in note.get("subjects"):
-                    subjects_id_set.add(subject_id)
-
-        subjects_objects = {
-
-        }
-
-        for subject_id in subjects_id_set:
-            if subject_id:
-                subjects_objects[subject_id] = SubjectRepo().get_by_id(subject_id)
-            continue
-
-
-        all_notes.rewind()
-
-        return [{
-                "title" : note.get("title"),
-                "note" : note.get("note"),
-                "id" : str(note.get("_id")),
-                "subjects" : [ subject_id for subject_id in (note.get("subjects")  or  []) if note.get("subjects") and subject_id and note is not None  ]
-        } for note in all_notes]
+        return all_notes
 
     def delete(self, note_id : ObjectId):
         print(note_id)
@@ -75,11 +48,12 @@ class NotesRepo(BaseRepo):
         return self.collection.find_one({"title" : f"{str(name).strip()}"})
 
 
-    def get_by_id(self, note_id) -> dict | list:
-        if not ObjectId.is_valid(note_id):
-            return []
+    def get_by_id(self, note_id : ObjectId) -> dict | None:
+        if not isinstance(note_id, ObjectId):
+            raise  NotRightEntity(f"Expected type: ObjectID, received: {type(note_id)}")
 
-        result = self.collection.find_one({"_id" : ObjectId(note_id)})
+        result = self.collection.find_one({"_id" : note_id})
+
         return result
 
 

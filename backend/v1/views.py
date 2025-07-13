@@ -8,6 +8,7 @@ from rest_framework.response import Response
 
 from v1.entities.note_entity import NewNoteEntity, NoteEntity
 from v1.entities.subjectEntity import SubjectEntity, NewSubjectEntity
+from v1.exceptions.exceptions import NoteAlreadyExists
 from v1.repositories.NotesRepo import NotesRepo
 from v1.repositories.subjectsRepo import SubjectRepo
 from v1.services.notes_services import NotesService
@@ -26,15 +27,16 @@ class NotesView(APIView):
     def get(self, req):
 
         if query_id := req.GET.get("id") :
-            note_obj = self.repo.get_by_id(query_id)
+            note_entity  = self.service.get_by_id(query_id)
 
+            if note_entity:
+                return Response(
+                    note_entity.model_dump(mode="json")
+                )
 
-            return Response(
-                NoteEntity(**note_obj).model_dump(mode="json") if note_obj else {}
-            )
-
+        all_notes = self.service.get_all()
         return Response(
-            self.service.get_all()
+            all_notes
         )
 
     def post(self, req):
@@ -43,10 +45,14 @@ class NotesView(APIView):
             return Response(result_data.model_dump(mode="json"))
 
         except ValidationError as e:
-            raise e
             return Response({
-                "errors": str(e.errors())
+                "errors" : str(e)
             }, status=400)
+
+        except NoteAlreadyExists as e:
+            return Response(
+                {"message": "Note with this title already exists"}, status=409
+            )
 
     def delete(self, req):
         result = Boolean()

@@ -9,3 +9,7 @@ class SubjectNotFoundError(AppError):
 class NotRightEntity(AppError):
     """A expected entity was not received, instead it receive other type"""
     pass
+
+class NoteAlreadyExists(AppError):
+    """The note you tried to create already exist with this title or id"""
+    pass

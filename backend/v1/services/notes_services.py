@@ -1,67 +1,160 @@
-from typing import List
+from typing import List, Any, Type, TypeVar
 
 from bson import ObjectId
-from django.http import QueryDict, HttpRequest
+from pydantic import ValidationError, BaseModel
 
 from v1.entities.note_entity import NewNoteEntity, NoteEntity
-from v1.exceptions.exceptions import SubjectNotFoundError
+from v1.exceptions.exceptions import SubjectNotFoundError, NoteAlreadyExists
+from v1.loggers.file_handler import get_file_handler
 from v1.repositories.NotesRepo import NotesRepo
 from v1.repositories.subjectsRepo import SubjectRepo
 from v1.services.base_interface import BaseService
-from v1.services.subjects_services import SubjectsServices
 
+import logging
+logging_formater = logging.Formatter(fmt="%(asctime)s - %(name)s: %(levelname)s - line: %(lineno)d - %(message)s")
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+file_handler = get_file_handler("notes_services.log")
+file_handler.setFormatter(logging_formater)
+
+logger.addHandler(file_handler)
+
+
+T = TypeVar("T", bound=BaseModel)
 
 class NotesService(BaseService):
-    def __init__(self, note_repo : NotesRepo, subjects_repo : SubjectRepo):
+    def __init__(self, note_repo: NotesRepo, subjects_repo: SubjectRepo):
         self.repo = note_repo
         self.subjects_repo = subjects_repo
+        logger.debug("NotesService initialized with NoteRepo and SubjectRepo")
 
-    def create(self, new_note : NewNoteEntity) -> NoteEntity | None:
-        if self.repo.get_by_name(new_note.title): return None
+    def parse_result_to_entity(self, target_entity : Type[T], data : dict) -> T:
+        try:
+            return target_entity(**data)
+        except ValidationError as e:
+            logger.error(f"the Data send: {data} can not be used to create a {target_entity.__name__}")
+            raise e
 
-        created_object = self.repo.create(new_note=new_note)
 
-        return created_object
+    def create(self, new_note: NewNoteEntity) -> NoteEntity | None:
+        logger.debug(f"Attempting to create a new note with title: {new_note.title}")
 
-    def create_note_from_data(self, req_data : dict) -> NewNoteEntity :
+        if note := self.repo.get_by_name(new_note.title):
+            logger.info(f"Note with title '{new_note.title}' already exists. Skipping creation.")
 
-        """
-        This method receive a req, made all the processing to extract the data
-        and return a NoteEntity Object.
-        """
-        # Gathering the subjects id received from request data
+            raise NoteAlreadyExists("Note with this title already exist")
+
+        result_id  = self.repo.create(new_note=new_note)
+        logger.info(f"Note created successfully with title: {new_note.title}")
+
+        if result_id:
+            try:
+                note_entity = NoteEntity(**new_note.model_dump() | {"id" : result_id})
+                return note_entity
+            except ValidationError as e:
+                logger.warning(f"The note with ID has a problem: {str(result_id)}")
+
+        # At this point the result id is None that means no new notes have been created
+        # So the none is the most correct way to inform that this operation throw an error
+        return None
+
+
+
+    def create_note_from_data(self, req_data: dict) -> NoteEntity:
+        logger.debug(f"Processing request data to create note: {req_data}")
+
         received_subjects_id = req_data.get("subjects")
-        
+
         if note := self.get_by_title(req_data.get("title")):
-            return note
+            logger.info(f"Note with title '{req_data.get('title')}' already exists. Returning existing note.")
 
         found_subjects: List[ObjectId] = []
 
         for subject_id in received_subjects_id:
             if subject_object := self.subjects_repo.get_by_id(subject_id):
+                logger.debug(f"Subject found for ID: {subject_id}")
                 found_subjects.append(ObjectId(subject_object.id))
             else:
+                logger.warning(f"Subject with ID {subject_id} not found. Raising error.")
                 raise SubjectNotFoundError()
 
-        new_note = req_data.copy()
-        new_note["subjects"] = found_subjects
+        # Data flow
+        new_note_data = req_data.copy()
+        new_note_data["subjects"] = found_subjects
 
-        new_note_obj = NewNoteEntity(**new_note)
+        try:
+            # Create a new entity
+            new_note_entity = NewNoteEntity(**new_note_data)
+        except ValidationError as e:
+            logger.error(f"Error on creation: {e}")
+            raise ValidationError(str(e))
 
-        self.create(new_note_obj)
+        try:
+            note_entity = self.create(new_note_entity)
 
-        return new_note_obj
+        except NoteAlreadyExists as e:
+            raise e
+
+        logger.info(f"Note entity created and inserted: {new_note_entity.title}")
+
+        return note_entity
 
     def get_by_title(self, title):
-
+        logger.debug(f"get_by_title method called with title: {title}")
         pass
 
-    def get_by_id(self, object_id: ObjectId):
-        pass
+    def get_by_id(self, note_id: str) -> NoteEntity | None:
+        logger.debug(f"get_by_id called with note_id: {note_id}")
+
+        if ObjectId.is_valid(note_id):
+            object_id = ObjectId(note_id)
+
+            result = self.repo.get_by_id(note_id=object_id)
+
+            if result:
+                logger.info(f"Note fetched with ID: {note_id}")
+                note_entity = self.parse_result_to_entity(NoteEntity, result)
+                return note_entity
+
+        logger.warning(f"Invalid ObjectId provided: {note_id}")
+        return None
 
     def get_all(self):
-        return self.repo.get_all()
+        all_notes = [note for note in self.repo.get_all()]
+        logger.info(f"{len(all_notes)} notes fetched from the database.")
+
+        return [{
+            "title": note.get("title"),
+            "note": note.get("note"),
+            "id": str(note.get("_id")),
+            "subjects": [
+                subject_id for subject_id in (note.get("subjects") or [])
+                if note.get("subjects") and subject_id and note is not None
+            ]
+        } for note in all_notes]
+
+    def get_all_as_entity(self):
+        all_notes = self.repo.get_all()
+        logger.info(f"Attempting to convert all notes to NoteEntity")
+
+        note_entities: List[NoteEntity] = []
+
+        for note in all_notes:
+            try:
+                note_entity = NoteEntity(**note)
+                note_entities.append(note_entity)
+            except ValidationError:
+                logger.warning(f"A badly formatted Note was found. Note id: {note.get('_id')}")
+                continue
+
+        logger.info(f"Successfully converted {len(note_entities)} notes to NoteEntity format")
+        return note_entities
 
     def delete(self, item_id: ObjectId):
-        return self.repo.delete(item_id)
+        logger.debug(f"Attempting to delete note with ID: {item_id}")
+        result = self.repo.delete(item_id)
+        logger.info(f"Note with ID {item_id} deleted.")
+        return result
 
