@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+backend/v1/__pycache__/views.cpython-313.pyc
+backend/v1/exceptions/__pycache__/exceptions.cpython-313.pyc
+backend/v1/loggers/__pycache__/__init__.cpython-313.pyc
+backend/v1/loggers/__pycache__/file_handler.cpython-313.pyc
+backend/v1/repositories/__pycache__/NotesRepo.cpython-313.pyc
+backend/v1/services/__pycache__/notes_services.cpython-313.pyc
