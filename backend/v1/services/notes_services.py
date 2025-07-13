@@ -38,28 +38,23 @@ class NotesService(BaseService):
             raise e
 
 
-    def create(self, new_note: NewNoteEntity) -> NoteEntity | None:
+    def create(self, new_note: NewNoteEntity) -> NoteEntity :
         logger.debug(f"Attempting to create a new note with title: {new_note.title}")
 
-        if note := self.repo.get_by_name(new_note.title):
+        if self.repo.get_by_name(new_note.title):
             logger.info(f"Note with title '{new_note.title}' already exists. Skipping creation.")
 
             raise NoteAlreadyExists("Note with this title already exist")
 
-        result_id  = self.repo.create(new_note=new_note)
+        note_id  = self.repo.create(new_note=new_note)
         logger.info(f"Note created successfully with title: {new_note.title}")
 
-        if result_id:
-            try:
-                note_entity = NoteEntity(**new_note.model_dump() | {"id" : result_id})
-                return note_entity
-            except ValidationError as e:
-                logger.warning(f"The note with ID has a problem: {str(result_id)}")
-
-        # At this point the result id is None that means no new notes have been created
-        # So the none is the most correct way to inform that this operation throw an error
-        return None
-
+        try:
+            note_entity = NoteEntity(**new_note.model_dump() | {"id" : note_id})
+            return note_entity
+        except ValidationError as e:
+            logger.warning(f"The note with ID has a problem: {str(note_id)}")
+            raise e
 
 
     def create_note_from_data(self, req_data: dict) -> NoteEntity:
@@ -67,8 +62,9 @@ class NotesService(BaseService):
 
         received_subjects_id = req_data.get("subjects")
 
-        if note := self.get_by_title(req_data.get("title")):
+        if self.repo.get_by_name(req_data.get("title")):
             logger.info(f"Note with title '{req_data.get('title')}' already exists. Returning existing note.")
+            raise NoteAlreadyExists("This note with this title already exists")
 
         found_subjects: List[ObjectId] = []
 
@@ -85,25 +81,18 @@ class NotesService(BaseService):
         new_note_data["subjects"] = found_subjects
 
         try:
-            # Create a new entity
             new_note_entity = NewNoteEntity(**new_note_data)
+
         except ValidationError as e:
             logger.error(f"Error on creation: {e}")
             raise ValidationError(str(e))
 
-        try:
-            note_entity = self.create(new_note_entity)
 
-        except NoteAlreadyExists as e:
-            raise e
+        note_entity = self.create(new_note_entity)
 
         logger.info(f"Note entity created and inserted: {new_note_entity.title}")
 
         return note_entity
-
-    def get_by_title(self, title):
-        logger.debug(f"get_by_title method called with title: {title}")
-        pass
 
     def get_by_id(self, note_id: str) -> NoteEntity | None:
         logger.debug(f"get_by_id called with note_id: {note_id}")
