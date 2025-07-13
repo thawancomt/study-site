@@ -27,4 +27,31 @@ export class ConcreteNoteService implements INoteService {
 	getAll(): NoteEntity[] {
 		return this.noteRepository.getAllNotes();
 	}
+
+	async resumeNote(note : NoteEntity) {
+
+		const request_body = {
+			model: "llama-3.2-1b-instruct",
+			messages : [
+				{ rule : "user", 
+					prompt : note.note
+				}
+			],
+			temperature: 0.9
+		}
+
+		const model_response = await fetch("http://localhost:1234/api/v1",
+			{
+				method: "POST",
+				body: JSON.stringify(
+					request_body
+				),
+				headers: {
+					"Content-Type" : "application/json"
+				}
+			}
+		)
+
+		return await model_response.json()
+	}
 }

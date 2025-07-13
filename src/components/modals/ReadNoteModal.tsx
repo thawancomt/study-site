@@ -46,7 +46,7 @@ const modalContainerVariants = {
 };
 
 export default function ReadNoteModal() {
-	const { toggleReadNoteModalVisibility, noteForModal } = useNoteContext();
+	const { toggleReadNoteModalVisibility, noteForModal, setNoteForModal } = useNoteContext();
 	const [noteContent, setNoteContent] = useState(noteForModal.note);
 
 	const [icon, setIcon] = useState(<Save key={"saveIconOnReadModal"} />);
@@ -85,7 +85,12 @@ export default function ReadNoteModal() {
 					variants={titleDivVariants}
 					className="flex justify-between items-start mb-4"
 				>
-						<NotesSearchInput className="border-none !text-accent-foreground text-2xl placeholder:text-accent-foreground/80" onTyping={() => {}} icon={<BookA className="text-foreground" />}/>
+						<NotesSearchInput value={noteForModal.title} className="border-none !text-accent-foreground text-2xl placeholder:text-accent-foreground/80" onTyping={(newTitle : string) => {
+							setNoteForModal(prev => ({
+								...prev,
+								title : newTitle
+							}))
+						}} icon={<BookA className="text-foreground" />}/>
 
 					<button
 						type="button"
