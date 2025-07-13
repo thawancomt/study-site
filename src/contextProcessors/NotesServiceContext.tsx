@@ -16,10 +16,14 @@ import { ConcreteNoteService } from "../ORM/notes/implementations/notes.concrete
 interface NoteServiceContextOptions {
 	service: ConcreteNoteService;
 	notes: NoteEntity[];
+	noteForModal: NoteEntity;
+	setNoteForModal: Dispatch<SetStateAction<NoteEntity>>;
 	setNotes: Dispatch<SetStateAction<NoteEntity[]>>;
 	showCreateModal: boolean;
+	showReadNoteModal: boolean;
 	toggleCreateModalVisibility: () => void;
-	updateNoteOnContext: (noteId : string, note : NoteEntity) => boolean;
+	toggleReadNoteModalVisibility: () => void;
+	updateNoteOnContext: (noteId: string, note: NoteEntity) => boolean;
 }
 
 const NoteServiceContext = createContext<NoteServiceContextOptions | null>(
@@ -33,39 +37,63 @@ function NoteServiceProvider({ children }: { children: React.ReactNode }) {
 	});
 
 	const [notes, setNotes] = useState<NoteEntity[]>([]);
+	const [noteForModal, setnoteForModal] = useState<NoteEntity>({
+		createdAt: new Date(),
+		id: "",
+		note: "",
+		subjects: [],
+		title: "",
+		updatedAt: new Date(),
+	});
 
 	const [showCreateModal, setShowCreateModal] = useState(false);
+	const [showReadNoteModal, setShowReadNoteModal] = useState(false);
 
 	const toggleCreateModalVisibility = useCallback(() => {
 		setShowCreateModal((prev) => !prev);
 	}, []);
 
 	function updateNoteOnContext(noteId: string, updatedNote: NoteEntity) {
+		const result = noteService.modifyNote(noteId, updatedNote);
+		
+		
+		result.then(res => {
+			setNotes(notes.map((item) => {
+				if (item.id === noteId) {
+					return res ? res : item;
+				} else return item;
+			}))
+		})
 
-		const result = noteService.modifyNote(noteId, updatedNote)
+		return true;
+	}
 
-		if (!result) result;
-
-		notes.map((item) => {
-			if (item.id === noteId) {
-				return updatedNote;
-			} else return item;
-		});
-
-		return true
+	function toggleReadNoteModalVisibility() {
+		setShowReadNoteModal(!showReadNoteModal);
 	}
 
 	const contextValue = useMemo(
 		() => ({
 			service: noteService,
-			notes : notes,
-			setNotes : setNotes,
+			notes: notes,
+			noteForModal,
+			setNoteForModal: setnoteForModal,
+			setNotes: setNotes,
 			showCreateModal: showCreateModal,
-			toggleCreateModalVisibility : toggleCreateModalVisibility,
-			updateNoteOnContext : updateNoteOnContext
+			showReadNoteModal: showReadNoteModal,
+			toggleCreateModalVisibility: toggleCreateModalVisibility,
+			updateNoteOnContext: updateNoteOnContext,
+			toggleReadNoteModalVisibility: toggleReadNoteModalVisibility,
 		}),
-		// biome-ignore lint/correctness/useExhaustiveDependencies: <because i want hun>
-		[noteService, notes, showCreateModal, toggleCreateModalVisibility, updateNoteOnContext],
+		
+		[
+			noteService,
+			notes,
+			showCreateModal,
+			toggleCreateModalVisibility,
+			// biome-ignore lint/correctness/useExhaustiveDependencies: <because i want hun>
+			updateNoteOnContext,
+		],
 	);
 
 	return (

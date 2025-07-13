@@ -53,13 +53,11 @@ export function mostUsedWord(notes) {
 export default function NotesPage() {
 	const [loaded, setLoaded] = useState(false);
 	const [noteSearchQuery, setNoteSearchQuery] = useState("");
-	const [showModal, setShowModal] = useState(false);
 
-	const { note: modalNote, setNote: setModalNote } = useNoteModal();
 
 	// Note: It's often better to initialize these outside the component
 	// or use useMemo to avoid re-creating them on every render.
-	const { service, notes, setNotes } = useNoteContext();
+	const { service, notes, setNotes, noteForModal, setNoteForModal, toggleReadNoteModalVisibility } = useNoteContext();
 
 	async function loadNotes() {
 		const result = await service.getAll();
@@ -73,9 +71,6 @@ export default function NotesPage() {
 		}, 50);
 	}, []);
 
-	useEffect(() => {
-		console.log(service.getNoteById(modalNote.id));
-	}, [showModal]);
 
 	useEffect(() => {
 		console.log(noteSearchQuery);
@@ -86,8 +81,9 @@ export default function NotesPage() {
 	}
 
 	function handleOpenModal(note: NoteEntity) {
-		setModalNote(note);
-		setShowModal(true);
+		toggleReadNoteModalVisibility()
+		setNoteForModal(note)
+		
 	}
 
 	
@@ -136,7 +132,7 @@ export default function NotesPage() {
 					animate={loaded ? "show" : "hidden"}
 				>
 					<div className={"!w-full !max-w-full "}>
-						<NotesSearchInput onTyping={setNoteSearchQuery} />
+						<NotesSearchInput onTyping={setNoteSearchQuery} className=""/>
 					</div>
 
 					{notes.length && notes.length ? (
@@ -169,28 +165,7 @@ export default function NotesPage() {
 					)}
 				</motion.div>
 			</AnimatePresence>
-
-			<button
-				type="button"
-				className="text-white bg-dark-muted p-2 rounded-md"
-				onClick={loadNotes}
-			>
-				Carregar todas as notas
-			</button>
-			{createPortal(
-				<AnimatePresence>
-					{showModal && (
-						<ReadNoteModal
-							onClose={() => {
-								setShowModal(false);
-							}}
-						/>
-					)}
-				</AnimatePresence>,
-				document.body,
-			)}
-
-			<CreateNoteFluent />
+			<CreateNoteFluent></CreateNoteFluent>
 		</>
 	);
 }
