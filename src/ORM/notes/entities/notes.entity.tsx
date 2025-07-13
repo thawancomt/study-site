@@ -6,7 +6,8 @@ export type NoteEntity = {
 	note: string;
 	createdAt: Date;
 	updatedAt: Date;
-	subjects: SubjectsEntity[]
+	subjects: SubjectsEntity[],
+	AiResume?: string
 };
 
 export type NewNoteEntity = Omit<NoteEntity, "id">

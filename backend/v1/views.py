@@ -70,6 +70,8 @@ class NotesView(APIView):
 
     def put(self, req):
         req.data["subjects"] = []
+
+        print(req.data)
         try:
             updated_entity = NoteEntity(**req.data)
             result = NoteEntity(**self.repo.put(updated_entity))

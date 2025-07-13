@@ -81,6 +81,8 @@ export default function NotesPage() {
 	}
 
 	function handleOpenModal(note: NoteEntity) {
+		console.log(note);
+		
 		toggleReadNoteModalVisibility()
 		setNoteForModal(note)
 		

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from bson import ObjectId
 from pydantic import BaseModel, Field, AliasChoices
@@ -12,6 +12,7 @@ class NoteEntity(BaseModel):
     title : str
     note: str
     subjects: List[SubjectEntity] | None = None
+    ai_resume : Optional[str] = Field(default=None, validation_alias=AliasChoices("AiResume", "ai_resume"))
 
     class Config:
         allow_population_by_field_name = True

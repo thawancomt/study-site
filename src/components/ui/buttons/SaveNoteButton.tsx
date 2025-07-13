@@ -35,7 +35,9 @@ export default function SaveNoteButton({
 
 	return (
 		<Button
-			onClick={callBack}
+			onClick={async () => {
+				await callBack()
+			}}
 			className={combinedClasses}
 			disabled={type === "disabled"}
 			whileHover={{ scale: 1.02 }}

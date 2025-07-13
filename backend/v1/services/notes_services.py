@@ -118,6 +118,7 @@ class NotesService(BaseService):
             "title": note.get("title"),
             "note": note.get("note"),
             "id": str(note.get("_id")),
+            "AiResume" : note.get("ai_resume"),
             "subjects": [
                 subject_id for subject_id in (note.get("subjects") or [])
                 if note.get("subjects") and subject_id and note is not None

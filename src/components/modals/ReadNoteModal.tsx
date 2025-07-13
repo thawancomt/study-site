@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { BookA, CloudCheck, Save, X } from "lucide-react";
-import { useState } from "react";
+import { BookA, Brain, CloudCheck, Save, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useNoteContext } from "../../contextProcessors/NotesServiceContext";
 import { countWords } from "../../pages/notes/NoteListPage";
 import SaveNoteButton from "../ui/buttons/SaveNoteButton";
@@ -46,12 +46,13 @@ const modalContainerVariants = {
 };
 
 export default function ReadNoteModal() {
-	const { toggleReadNoteModalVisibility, noteForModal, setNoteForModal } = useNoteContext();
+	const { toggleReadNoteModalVisibility, noteForModal, setNoteForModal } =
+		useNoteContext();
 	const [noteContent, setNoteContent] = useState(noteForModal.note);
-
+	const [resume, setResume] = useState(noteForModal.AiResume || "");
 	const [icon, setIcon] = useState(<Save key={"saveIconOnReadModal"} />);
 
-	const { updateNoteOnContext: contextUpdateNote } = useNoteContext();
+	const { updateNoteOnContext: contextUpdateNote, service } = useNoteContext();
 
 	const handleSave = async () => {
 		contextUpdateNote(noteForModal.id, { ...noteForModal, note: noteContent });
@@ -59,6 +60,28 @@ export default function ReadNoteModal() {
 		setIcon(<CloudCheck />);
 		setTimeout(toggleReadNoteModalVisibility, 800);
 	};
+
+	async function resumeNote() {
+		const result = await service.resumeNote(noteForModal)
+		console.log(result);
+		if (result) {
+			const response = result.choices[0].message.content
+			setResume(response);
+			setNoteForModal({
+				...noteForModal,
+				AiResume: response
+			})
+			contextUpdateNote(noteForModal.id, noteForModal)
+		}
+	}
+
+
+	useEffect(() => {
+		console.log(noteForModal);
+		
+		setResume(noteForModal.AiResume)
+	}, [noteForModal])
+
 
 	return (
 		<motion.div
@@ -85,12 +108,17 @@ export default function ReadNoteModal() {
 					variants={titleDivVariants}
 					className="flex justify-between items-start mb-4"
 				>
-						<NotesSearchInput value={noteForModal.title} className="border-none !text-accent-foreground text-2xl placeholder:text-accent-foreground/80" onTyping={(newTitle : string) => {
-							setNoteForModal(prev => ({
+					<NotesSearchInput
+						value={noteForModal.title}
+						className="border-none !text-accent-foreground text-2xl placeholder:text-accent-foreground/80"
+						onTyping={(newTitle: string) => {
+							setNoteForModal((prev) => ({
 								...prev,
-								title : newTitle
-							}))
-						}} icon={<BookA className="text-foreground" />}/>
+								title: newTitle,
+							}));
+						}}
+						icon={<BookA className="text-foreground" />}
+					/>
 
 					<button
 						type="button"
@@ -121,12 +149,32 @@ export default function ReadNoteModal() {
 						className="h-64"
 					/>
 				</motion.div>
+
+				<motion.div variants={itemAnimationVariant}>
+					<textarea
+						name=""
+						id=""
+						value={resume}
+						readOnly
+						className="w-full p-4 border-4 rounded-2xl border-green-700 bg-muted-foreground text-accent"
+					></textarea>
+				</motion.div>
+
 				<motion.div variants={itemAnimationVariant}>
 					<SaveNoteButton
 						callBack={handleSave}
 						title="Save"
 						type="success"
 						icon={icon}
+					/>
+
+					<SaveNoteButton
+						callBack={async () => {
+							await resumeNote();
+						}}
+						title="Get resume"
+						type="create"
+						icon={<Brain />}
 					/>
 				</motion.div>
 
