@@ -1,27 +1,19 @@
-import { AnimatePresence, motion, scale } from "framer-motion";
-import { CircleAlertIcon, CirclePlus, Sparkles } from "lucide-react";
-import React, { type ReactNode, useEffect, useState } from "react";
+// components/NoTitleHoverButton.tsx
+import { AnimatePresence, motion } from "framer-motion"; // motion is still needed for motion.span
+import { CirclePlus } from "lucide-react";
+import React, { type ReactNode, useState } from "react";
 import { useNoteContext } from "../../../contextProcessors/NotesServiceContext";
-
-interface SaveNoteButtonProps {
-	title: string;
-	callBack: () => void;
-	type: "success" | "alert" | "info";
-	icon?: ReactNode & { type: { name: string } };
-}
-
-const baseButtonStyles =
-	"rounded-xl p-2 text-sm font-semibold shadow-sm transition-all duration-500 ease-in-out  flex items-center gap-2 overflow-hidden group shadow-xs shadow-white ";
-const buttonTypeStyles: Record<SaveNoteButtonProps["type"], string> = {
-	success: "bg-primary text-primary-foreground hover:bg-primary/90",
-	alert: "bg-destructive/70 text-white/80 hover:bg-destructive/80",
-	info: "bg-secondary text-secondary-foreground hover:bg-secondary/90",
-};
+import { Button } from "./Button";
+import {
+	baseButtonStyles,
+	buttonTypeStyles,
+	type SaveNoteButtonProps, // Still useful for defining the 'type'
+} from "./SaveNoteButton"; // Import from the same location
 
 export default function NoTitleHoverButton({
 	title,
 	callBack,
-	type,
+	type, // We'll still receive the initial type, but override on hover
 	icon,
 }: SaveNoteButtonProps) {
 	const [showText, setShowText] = useState(false);
@@ -29,62 +21,46 @@ export default function NoTitleHoverButton({
 
 	const combinedClasses = `${baseButtonStyles} ${buttonTypeStyles[styleType]}`;
 
-	let showTimeOut;
+	// Use useRef for timeouts to prevent issues with stale closures
+	// Or, better yet, use a state variable for the timeout ID
+	const [showTimeoutId, setShowTimeoutId] = useState<NodeJS.Timeout | null>(
+		null,
+	);
 
-    const {showCreateModal} = useNoteContext()
+	const { showCreateModal } = useNoteContext();
 
 	return (
-		<motion.button
-			type="button"
+		<Button
 			onClick={callBack}
+			className={combinedClasses}
 			whileHover={{
 				scale: 1.1,
 			}}
-            whileTap={{
-                scale: 0.8,
-                transition: {
-                    duration: 0.3,
-                    type: "spring"
-                }
-            }}
-
+			whileTap={{
+				scale: 0.8,
+				transition: {
+					duration: 0.3,
+					type: "spring",
+				},
+			}}
 			onMouseEnter={() => {
-				clearTimeout(showTimeOut);
+				if (showTimeoutId) clearTimeout(showTimeoutId);
 				setShowText(true);
-				setStyleType("info");
+				setStyleType("create");
 			}}
 			onMouseLeave={() => {
-				showTimeOut = setTimeout(() => {
+				const id = setTimeout(() => {
 					setShowText(false);
 					setStyleType("success");
 				}, 1000);
+				setShowTimeoutId(id);
 			}}
-			className={combinedClasses}
+			icon={
+				icon ?? (
+					<CirclePlus className="group-hover:rotate-45 transition-all duration-300 group-hover:scale-105" />
+				)
+			}
 		>
-			<AnimatePresence mode="wait">
-				<motion.div
-					initial={{
-						rotate: 30,
-						y: 4,
-					}}
-					animate={{
-						rotate: 0,
-						y: 0,
-					}}
-					exit={{
-						rotate: 60,
-						y: 4,
-					}}
-					transition={{
-						type: "spring",
-						duration: 0.5,
-					}}
-				>
-					{icon ?? (
-						<CirclePlus className="group-hover:rotate-45 transition-all duration-300 group-hover:scale-105" />
-					)}
-				</motion.div>
-			</AnimatePresence>
 			<AnimatePresence mode="wait">
 				{(showText || showCreateModal) && (
 					<motion.span
@@ -105,9 +81,9 @@ export default function NoTitleHoverButton({
 							},
 						}}
 						exit={{
-							opacity: 1,
+							opacity: 1, // Keep opacity at 1 during exit for a smoother disappear
 							width: 0,
-							display: "none",
+							display: "none", // Remove from layout after animation
 							transition: {
 								duration: 0.1,
 							},
@@ -117,6 +93,6 @@ export default function NoTitleHoverButton({
 					</motion.span>
 				)}
 			</AnimatePresence>
-		</motion.button>
+		</Button>
 	);
 }
