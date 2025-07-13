@@ -7,7 +7,7 @@ export type NoteEntity = {
 	createdAt: Date;
 	updatedAt: Date;
 	subjects: SubjectsEntity[],
-	AiResume?: string
+	aiResume?: string
 };
 
 export type NewNoteEntity = Omit<NoteEntity, "id">

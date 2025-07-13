@@ -38,7 +38,7 @@ class NotesRepo(BaseRepo):
     def put(self, new_data : NoteEntity):
         updated = self.collection.find_one_and_update(
             filter={"_id" : ObjectId(new_data.id)},
-            update={"$set": new_data.model_dump(mode="json")},
+            update={"$set": new_data.model_dump(mode="json", by_alias=True)},
             return_document=ReturnDocument.AFTER
         )
 

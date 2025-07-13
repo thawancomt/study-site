@@ -12,7 +12,7 @@ class NoteEntity(BaseModel):
     title : str
     note: str
     subjects: List[SubjectEntity] | None = None
-    ai_resume : Optional[str] = Field(default=None, validation_alias=AliasChoices("AiResume", "ai_resume"))
+    ai_resume : Optional[str] = Field(default=None, alias="aiResume")
 
     class Config:
         allow_population_by_field_name = True

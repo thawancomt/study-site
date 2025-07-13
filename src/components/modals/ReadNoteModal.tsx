@@ -69,7 +69,7 @@ export default function ReadNoteModal() {
 			setResume(response);
 			setNoteForModal({
 				...noteForModal,
-				AiResume: response
+				aiResume: response
 			})
 			contextUpdateNote(noteForModal.id, noteForModal)
 		}
@@ -78,8 +78,7 @@ export default function ReadNoteModal() {
 
 	useEffect(() => {
 		console.log(noteForModal);
-		
-		setResume(noteForModal.AiResume)
+		setResume(noteForModal.aiResume)
 	}, [noteForModal])
 
 
