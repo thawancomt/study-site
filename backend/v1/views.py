@@ -3,9 +3,11 @@ from xmlrpc.client import Boolean
 
 from bson import ObjectId
 from pydantic import ValidationError, BaseModel
+from pyexpat.errors import messages
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from v1.ai_pipeline.services.ai_resume_services import AIResume
 from v1.entities.note_entity import NewNoteEntity, NoteEntity
 from v1.entities.subjectEntity import SubjectEntity, NewSubjectEntity
 from v1.exceptions.exceptions import NoteAlreadyExists
@@ -111,6 +113,31 @@ class SubjectsView(APIView):
             return Response({
                 "errors": str(e.errors())
             }, status=400)
+
+class AiResumeView(APIView):
+
+    service = AIResume("")
+
+    def post(self, req):
+        payload = req.data
+
+
+        if prompt := payload.get("prompt"):
+            print(f"Your prompt: {prompt}")
+
+            try:
+                model_output = self.service.ask(prompt)
+                return Response({
+                    "message" : f"{model_output}"
+                })
+            except Exception as e:
+                return Response({
+                    "error" : "Your prompt couldnt be processed"
+                }, status=500)
+
+        return Response({
+            "message" : "We got you"
+        })
 
 
 
