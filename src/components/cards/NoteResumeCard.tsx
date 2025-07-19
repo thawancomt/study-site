@@ -59,7 +59,7 @@ export default function NoteResumeCard({
 			layout
 			variants={cardVariants}
 			exit={{ opacity: 0 }}
-			className="border-accent-foreground/30 bg-muted-foreground/80 hover:bg-muted-foreground/90 text-accent-foreground p-2 border relative rounded-lg h-fit"
+			className="border-accent-foreground/30 bg-muted-foreground/80 hover:bg-muted-foreground/90 text-accent-foreground p-2 border relative rounded-lg h-fit flex-1 "
 			whileHover={{
 				scale: 1.02,
 			}}
@@ -96,7 +96,7 @@ export default function NoteResumeCard({
 
 			{/* Footer */}
 			<motion.section
-				className="flex justify-end mt-2 gap-2"
+				className="flex justify-end mt-2 gap-2 w-full "
 				initial={{ y: 20 }}
 				animate={{ y: 0 }}
 				transition={{ duration: 0.2, staggerChildren: 0.4 }}

@@ -14,7 +14,7 @@ export type SaveNoteButtonProps = {
 };
 
 export const baseButtonStyles =
-	"rounded-xl p-2 text-sm font-semibold shadow-sm transition-all duration-200 ease-in-out transform flex basis-[20%] shrink-1 disabled:cursor-not-allowed flex items-center gap-2 overflow-hidden";
+	"rounded-xl p-2 text-sm font-semibold shadow-sm transition-all duration-200 ease-in-out transform flex basis-[50%] shrink-1 disabled:cursor-not-allowed flex items-center gap-2 overflow-hidden";
 
 export const buttonTypeStyles: Record<SaveNoteButtonProps["type"], string> = {
 	success: "bg-primary text-primary-foreground hover:bg-primary/90",
@@ -50,6 +50,8 @@ export default function SaveNoteButton({
 				animate={{
 					opacity: 1,
 				}}
+
+				className="text-ellipsis whitespace-break-spaces"
 			>
 				{title}
 			</motion.span>

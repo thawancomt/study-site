@@ -12,7 +12,7 @@ type AppLayoutProps = {
 export default function AppLayout({ children }: AppLayoutProps) {
 	const { showCreateModal, showReadNoteModal } = useNoteContext();
 	return (
-		<div>
+		<div className="z-50">
 			<Header />
 			{children}
 			<AnimatePresence mode="wait">

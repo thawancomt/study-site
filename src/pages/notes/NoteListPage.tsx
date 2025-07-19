@@ -126,7 +126,7 @@ export default function NotesPage() {
 
 			<AnimatePresence mode="popLayout">
 				<motion.div
-					className="flex flex-wrap border p-4 m-1 rounded-2xl bg-accent-foreground/80 border-accent/10 gap-2 *:grow *:max-w-1/2  "
+					className="flex flex-wrap border p-4 m-1 rounded-2xl bg-accent-foreground/80 border-accent/10 gap-2  *:max-w-1/2"
 					layout
 					variants={containerVariants}
 					initial="hidden"

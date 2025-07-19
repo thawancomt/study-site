@@ -8,7 +8,6 @@ import {
 	useMemo,
 	useState,
 } from "react";
-import CreateNote from "../components/modals/CreateNoteModal";
 import type { NoteEntity } from "../ORM/notes/entities/notes.entity";
 import MongoDBNotesRepo from "../ORM/notes/implementations/notes.concrete.mongodb.repository";
 import { ConcreteNoteService } from "../ORM/notes/implementations/notes.concrete.service";
@@ -55,15 +54,16 @@ function NoteServiceProvider({ children }: { children: React.ReactNode }) {
 
 	function updateNoteOnContext(noteId: string, updatedNote: NoteEntity) {
 		const result = noteService.modifyNote(noteId, updatedNote);
-		
-		
-		result.then(res => {
-			setNotes(notes.map((item) => {
-				if (item.id === noteId) {
-					return res ? res : item;
-				} else return item;
-			}))
-		})
+
+		result.then((res) => {
+			setNotes(
+				notes.map((item) => {
+					if (item.id === noteId) {
+						return res ? res : item;
+					} else return item;
+				}),
+			);
+		});
 
 		return true;
 	}
@@ -85,7 +85,7 @@ function NoteServiceProvider({ children }: { children: React.ReactNode }) {
 			updateNoteOnContext: updateNoteOnContext,
 			toggleReadNoteModalVisibility: toggleReadNoteModalVisibility,
 		}),
-		
+
 		[
 			noteService,
 			notes,

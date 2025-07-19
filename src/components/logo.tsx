@@ -1,6 +1,12 @@
 import { Link } from "react-router";
-import Home from "../pages/home";
 
 export default function AppLogo() {
-	return <Link to="/" className="logo">SGTS</Link>;
+	return (
+		<Link
+			to="/"
+			className="text-2xl font-bold text-over-dark hover:text-accent-purple transition-colors duration-300"
+		>
+			SGTS
+		</Link>
+	);
 }

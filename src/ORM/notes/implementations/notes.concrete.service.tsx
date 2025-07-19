@@ -2,7 +2,18 @@ import type { NewNoteEntity, NoteEntity } from "../entities/notes.entity";
 import type { INoteRepository } from "../interfaces/notes.repository";
 import type { INoteService } from "../interfaces/notes.service";
 export class ConcreteNoteService implements INoteService {
-	constructor(private noteRepository: INoteRepository) {}
+	constructor(
+		private noteRepository: INoteRepository,
+		public model: string = "",
+	) {
+		// temp default model, not use this on production
+
+		this.model = model || "deepseek-r1-distill-qwen-7b@q4_k_m";
+
+		if (this.model === "") {
+			throw Error("You dindt pass the model that you want to resume");
+		}
+	}
 
 	addNote(note: NewNoteEntity): Promise<NoteEntity> {
 		return this.noteRepository.create(note);
@@ -29,10 +40,9 @@ export class ConcreteNoteService implements INoteService {
 	}
 
 	async resumeNote(note: NoteEntity): Promise<JSON> {
-
 		const request_body = {
-			model: "llama-3.2-1b-instruct",
-			messages: [{ role: "user", content: note.note }], 
+			model: this.model,
+			messages: [{ role: "user", content: note.note }],
 			temperature: 0.9,
 		};
 
