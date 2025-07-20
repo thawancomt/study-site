@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+import { useDebounce } from "use-debounce";
 import type { NoteEntity } from "../../../ORM/notes/entities/notes.entity";
 import NoteListItemCard from "../../cards/NoteListItemCard";
 
@@ -57,25 +59,66 @@ const mockupData: NoteEntity[] = [
 	},
 ];
 
+const divContainerAnimationVariants = {
+	initial: {
+		opacity: 0,
+		x: 35,
+	},
+	animate: {
+		opacity: 1,
+		x: 0,
+	},
+};
+
 function HeaderSearchDropDown({
 	data = mockupData,
 	query = "",
 }: dropDownProps) {
 	return (
-		<div className="w-full rounded-2xl border border-white/10 bg-foreground/50 p-4 text-white shadow-2xl backdrop-blur-lg ">
-			<ul className="space-y-2">
-				{data
-					.filter(
-						(note) =>
-							note.note.toLowerCase().includes(query.toLowerCase()) ||
-							note.aiResume?.toLowerCase().includes(query.toLowerCase()) ||
-							note.title.toLowerCase().includes(query.toLowerCase()),
-					)
-					.map((note) => (
-						<NoteListItemCard note={note} key={note.id} />
-					))}
-			</ul>
-		</div>
+		<motion.div
+			className="w-full rounded-2xl border border-white/10 bg-foreground/50 p-4 text-white shadow-2xl backdrop-blur-lg "
+			initial={{
+				opacity: 0,
+				x: 30,
+			}}
+			animate={{
+				opacity: 1,
+				x: 0,
+			}}
+		>
+			<motion.ul
+				className="space-y-2"
+				variants={divContainerAnimationVariants}
+				initial={"initial"}
+				animate={"animate"}
+				transition={{
+					staggerChildren: 0.3,
+				}}
+			>
+				{data.length > 0 ? (
+					<>
+						{data
+							.slice(0, 5)
+							.filter(
+								(note) =>
+									note.note.toLowerCase().includes(query.toLowerCase()) ||
+									note.aiResume?.toLowerCase().includes(query.toLowerCase()) ||
+									note.title.toLowerCase().includes(query.toLowerCase()),
+							)
+							.map((note) => (
+								<NoteListItemCard note={note} key={note.id} />
+							))}
+						<li className="text-xs text-accent/30 mt-2 w-full text-center">
+							limited to 4 results
+						</li>
+					</>
+				) : (
+					<p className="text-xs text-accent/30 mt-2 w-full text-center">
+						None notes found
+					</p>
+				)}
+			</motion.ul>
+		</motion.div>
 	);
 }
 

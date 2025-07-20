@@ -1,5 +1,4 @@
-
-import { Link } from "react-router"
+import { Link } from "react-router";
 
 type SubjectNavBarLinkProps = {
 	title: string;
@@ -13,10 +12,11 @@ export default function SubjectNavBarLink({
 	return (
 		<Link
 			to={target}
-			className="text-over-muted bg-dark px-4 py-2 rounded-full hover:bg-accent-blue hover:text-white transition-all duration-300 shadow-lg border border-transparent hover:border-accent-purple"
+			className="text-over-muted bg-dark hover:bg-muted-foreground/30
+			px-4 py-2 rounded-full hover:bg-accent-blue hover:text-white transition-all
+			duration-300 shadow-lg border border-muted-foreground/30 hover:border-accent-purple"
 		>
 			{title}
 		</Link>
 	);
 }
-
