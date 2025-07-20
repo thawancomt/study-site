@@ -1,9 +1,9 @@
 {
-  "linter": {
-    "rules": {
-      "a11y": {
-        "noStaticElementInteractions": "off"
-      }
-    }
-  }
+	"linter": {
+		"rules": {
+			"a11y": {
+				"noStaticElementInteractions": "off"
+			}
+		}
+	}
 }

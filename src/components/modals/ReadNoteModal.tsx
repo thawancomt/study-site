@@ -62,25 +62,23 @@ export default function ReadNoteModal() {
 	};
 
 	async function resumeNote() {
-		const result = await service.resumeNote(noteForModal)
+		const result = await service.resumeNote(noteForModal);
 		console.log(result);
 		if (result) {
-			const response = result.choices[0].message.content
+			const response = result.choices[0].message.content;
 			setResume(response);
 			setNoteForModal({
 				...noteForModal,
-				aiResume: response
-			})
-			contextUpdateNote(noteForModal.id, noteForModal)
+				aiResume: response,
+			});
+			contextUpdateNote(noteForModal.id, noteForModal);
 		}
 	}
 
-
 	useEffect(() => {
 		console.log(noteForModal);
-		setResume(noteForModal.aiResume)
-	}, [noteForModal])
-
+		setResume(noteForModal.aiResume);
+	}, [noteForModal]);
 
 	return (
 		<motion.div

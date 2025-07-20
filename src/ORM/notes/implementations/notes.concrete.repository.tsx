@@ -7,31 +7,29 @@ import type {
 import type { NoteEntity, newNoteEntity } from "../entities/notes.entity";
 import type { INoteRepository } from "../interfaces/notes.repository";
 
-const STORE_NAME = "notes"
+const STORE_NAME = "notes";
 
 export class ConcreteNoteRepository implements INoteRepository {
-
 	dbPromisse = openDB(STORE_NAME, 1, {
 		upgrade(db) {
 			if (!db.objectStoreNames.contains(STORE_NAME)) {
 				db.createObjectStore(STORE_NAME, {
-					keyPath: "id", autoIncrement : true
-				})
+					keyPath: "id",
+					autoIncrement: true,
+				});
 			}
-		}
-	})
+		},
+	});
 
 	async create(newNote: newNoteEntity): Promise<NoteEntity> {
-		const db = await this.dbPromisse
+		const db = await this.dbPromisse;
 
-		const id = await db.add(STORE_NAME, newNote)
+		const id = await db.add(STORE_NAME, newNote);
 
 		return {
 			...newNote,
-			id : Number(id.toString())
-		}
-
-		
+			id: Number(id.toString()),
+		};
 	}
 
 	async findById(id: string): Promise<NoteEntity | null> {

@@ -5,10 +5,7 @@
 			"label": "Start Development Server",
 			"type": "shell",
 			"command": "npm",
-			"args": [
-				"run",
-				"dev"
-			],
+			"args": ["run", "dev"],
 			"group": "build",
 			"isBackground": true,
 			"problemMatcher": []

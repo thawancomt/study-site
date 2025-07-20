@@ -75,7 +75,6 @@ export default class MongoDBNotesRepo implements INoteRepository {
 		}).then((res) => res.json());
 
 		console.log(result);
-		
 
 		return result;
 	}

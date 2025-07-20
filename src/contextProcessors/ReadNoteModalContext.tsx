@@ -15,7 +15,11 @@ interface ReadModalOptions {
 
 const ReadNoteModalContext = createContext<ReadModalOptions>(null);
 
-export default function ReadModalProvider({ children }: { children: ReactNode }) {
+export default function ReadModalProvider({
+	children,
+}: {
+	children: ReactNode;
+}) {
 	const [note, setNote] = useState<NoteEntity>({
 		createdAt: new Date(),
 		id: "",

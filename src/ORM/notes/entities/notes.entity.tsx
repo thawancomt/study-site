@@ -1,13 +1,13 @@
 import type { SubjectsEntity } from "../../subjects/entities/subjects.entity";
 
 export type NoteEntity = {
-    id: string
+	id: string;
 	title: string;
 	note: string;
 	createdAt: Date;
 	updatedAt: Date;
-	subjects: SubjectsEntity[],
-	aiResume?: string
+	subjects: SubjectsEntity[];
+	aiResume?: string;
 };
 
-export type NewNoteEntity = Omit<NoteEntity, "id">
+export type NewNoteEntity = Omit<NoteEntity, "id">;

@@ -36,12 +36,12 @@ export default function SaveNoteButton({
 	return (
 		<Button
 			onClick={async () => {
-				await callBack()
+				await callBack();
 			}}
 			className={combinedClasses}
 			disabled={type === "disabled"}
 			whileHover={{ scale: 1.02 }}
-			icon={icon ?? <Sparkles />} 
+			icon={icon ?? <Sparkles />}
 		>
 			<motion.span
 				initial={{
@@ -50,7 +50,6 @@ export default function SaveNoteButton({
 				animate={{
 					opacity: 1,
 				}}
-
 				className="text-ellipsis whitespace-break-spaces"
 			>
 				{title}

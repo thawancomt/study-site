@@ -33,7 +33,7 @@ const cardVariants: Variants = {
 		opacity: 1,
 		y: 0,
 	},
-	exit: { opacity: 0, transition: { duration: 0.2 } }, 
+	exit: { opacity: 0, transition: { duration: 0.2 } },
 };
 export default function InsightCardForNoteListPage({
 	title,

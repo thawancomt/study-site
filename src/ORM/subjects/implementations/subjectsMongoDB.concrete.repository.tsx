@@ -7,12 +7,11 @@ export default class MongoDBSubjectRepo
 	async create(entity: NewSubject): Promise<SubjectsEntity> {
 		return await fetch("http://localhost:8000/api/subjects", {
 			body: JSON.stringify(entity),
-            headers :{
-                "Content-Type" : "application/json"
-            },
-            method: "POST"
-		})
-        .then(res => res.json() )
+			headers: {
+				"Content-Type": "application/json",
+			},
+			method: "POST",
+		}).then((res) => res.json());
 	}
 
 	delete(id: string): Promise<boolean> {}
@@ -20,14 +19,13 @@ export default class MongoDBSubjectRepo
 	findById(id: string): Promise<SubjectsEntity | null> {}
 
 	async getByName(name: string) {
-		const query = `name=${name}` 
+		const query = `name=${name}`;
 
 		const result = await fetch(`http://localhost:8000/api/subjects?${query}`, {
-			method: "GET"
-		})
+			method: "GET",
+		});
 
-		return result
-		
+		return result;
 	}
 
 	update(

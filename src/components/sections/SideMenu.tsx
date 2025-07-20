@@ -18,10 +18,14 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
 		>
 			<div className="p-4 bg-accent-foreground h-screen">
 				<div className="flex justify-end">
-					<button type="button" onClick={onClose} className="text-white mb-4 inline-flex bg-muted-foreground p-2 rounded-2xl
-          hover:scale-105 hover:rotate-3 hover:bg-dark-muted transition-all duration-300 group">
+					<button
+						type="button"
+						onClick={onClose}
+						className="text-white mb-4 inline-flex bg-muted-foreground p-2 rounded-2xl
+          hover:scale-105 hover:rotate-3 hover:bg-dark-muted transition-all duration-300 group"
+					>
 						Close
-						<XIcon className="group-hover:text-red-400"/>
+						<XIcon className="group-hover:text-red-400" />
 					</button>
 				</div>
 				<nav className="flex flex-col">

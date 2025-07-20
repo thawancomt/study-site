@@ -2,7 +2,9 @@ import type { IBaseRepository } from "../../base/baseRepo";
 import type { NewSubject, SubjectsEntity } from "../entities/subjects.entity";
 
 export class SubjectsService {
-	constructor(private repository: IBaseRepository<NewSubject, SubjectsEntity>) {}
+	constructor(
+		private repository: IBaseRepository<NewSubject, SubjectsEntity>,
+	) {}
 
 	public async create(subject: NewSubject): Promise<SubjectsEntity | null> {
 		if (await this.repository.getByName(subject.name)) {
@@ -25,14 +27,19 @@ export class SubjectsService {
 	}
 
 	public async getAllSubjects() {
-		const result : SubjectsEntity[] = await fetch("http://localhost:8000/api/subjects", {
-			method: "GET"
-		}).then(res => res.json())
+		const result: SubjectsEntity[] = await fetch(
+			"http://localhost:8000/api/subjects",
+			{
+				method: "GET",
+			},
+		).then((res) => res.json());
 
-		const data = Array.from(result).map( doc => ({
-			"name" : doc.name, "description" : doc.description, "id" : doc.id
-		}))
+		const data = Array.from(result).map((doc) => ({
+			name: doc.name,
+			description: doc.description,
+			id: doc.id,
+		}));
 
-		return data
+		return data;
 	}
 }

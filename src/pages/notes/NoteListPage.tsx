@@ -166,7 +166,7 @@ export default function NotesPage() {
 					)}
 				</motion.div>
 			</AnimatePresence>
-			<CreateNoteFluent/>
+			<CreateNoteFluent />
 		</>
 	);
 }

@@ -37,11 +37,9 @@ export default function CreateNoteModal() {
 			setCardState("saved");
 
 			setTimeout(toggleCreateModalVisibility, 800);
-			
 		} catch {
 			setCardState("deleted");
 		}
-
 	}
 
 	function resetComponent() {
@@ -51,7 +49,6 @@ export default function CreateNoteModal() {
 			note: "",
 			title: "",
 		});
-
 	}
 
 	useEffect(() => {
@@ -137,7 +134,11 @@ export default function CreateNoteModal() {
 					<SaveNoteButton
 						title="Discard"
 						callBack={resetComponent}
-						type={(note.note.length > 0 || note.title.length > 0)  ? "alert" : "disabled"}
+						type={
+							note.note.length > 0 || note.title.length > 0
+								? "alert"
+								: "disabled"
+						}
 						icon={<Trash2 />}
 					/>
 				</footer>
