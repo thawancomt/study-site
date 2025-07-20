@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { NewSubject } from "../ORM/subjects/entities/subjects.entity";
-import { IndexDBSubjectRepository } from "../ORM/subjects/implementations/subjects.concrete.repository";
 import { SubjectsService } from "../ORM/subjects/implementations/subjects.concrete.service";
 import MongoDBSubjectRepo from "../ORM/subjects/implementations/subjectsMongoDB.concrete.repository";
 

@@ -52,10 +52,10 @@ export default class MongoDBNotesRepo implements INoteRepository {
         }
     }
 
-    getByName(name: string) {}
+    getByName(_name: string) {}
 
     async update(
-        id: string,
+        _id: string,
         entity: Partial<NoteEntity>,
     ): Promise<NoteEntity | null> {
         const result = await fetch("http://localhost:8000/api/notes", {

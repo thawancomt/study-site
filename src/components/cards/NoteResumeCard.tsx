@@ -101,7 +101,7 @@ export default function NoteResumeCard({
                 animate={{ y: 0 }}
                 transition={{ duration: 0.2, staggerChildren: 0.4 }}
             >
-                {note.note.length > maxChars || !isNaN(maxChars) ? (
+                {note.note.length > maxChars || !Number.isNaN(maxChars) ? (
                     note.note.length > maxChars && (
                         <SaveNoteButton
                             callBack={handleExpandNote}

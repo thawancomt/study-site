@@ -25,7 +25,7 @@ export default function NoteListItemCard({ note }: { note: NoteEntity }) {
     return (
         <motion.li
             variants={itemAnimationVariant}
-            onMouseDown={(e) => {
+            onMouseDown={(_e) => {
                 onClickCallback();
             }}
             key={note.id}

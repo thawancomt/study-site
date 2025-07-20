@@ -1,9 +1,4 @@
 import { openDB } from "idb";
-import type { IBaseRepository } from "../../base/baseRepo";
-import type {
-    NewSubject,
-    SubjectsEntity,
-} from "../../subjects/entities/subjects.entity";
 import type { NoteEntity, newNoteEntity } from "../entities/notes.entity";
 import type { INoteRepository } from "../interfaces/notes.repository";
 
@@ -32,18 +27,18 @@ export class ConcreteNoteRepository implements INoteRepository {
         };
     }
 
-    async findById(id: string): Promise<NoteEntity | null> {
+    async findById(_id: string): Promise<NoteEntity | null> {
         throw new Error("Method not implemented.");
     }
 
     async update(
-        id: string,
-        note: Partial<NoteEntity>,
+        _id: string,
+        _note: Partial<NoteEntity>,
     ): Promise<NoteEntity | null> {
         throw new Error("Method not implemented.");
     }
 
-    async delete(id: string): Promise<boolean> {
+    async delete(_id: string): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
 }

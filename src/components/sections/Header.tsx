@@ -1,4 +1,4 @@
-import { Hamburger, HamburgerIcon, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useState } from "react";
 import HeaderSearchBar from "../inputs/HeaderSearchBar";
 import AppLogo from "../logo";

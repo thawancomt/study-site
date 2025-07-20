@@ -55,7 +55,7 @@ export default function CreateNoteModal() {
         setTimeout(() => {
             setCardState("normal");
         }, 600);
-    }, [cardState]);
+    }, []);
 
     return (
         <motion.div

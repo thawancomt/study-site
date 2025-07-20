@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { useDebounce } from "use-debounce";
 import type { NoteEntity } from "../../../ORM/notes/entities/notes.entity";
 import NoteListItemCard from "../../cards/NoteListItemCard";
 

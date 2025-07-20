@@ -23,7 +23,7 @@ export class SubjectsService {
                 );
                 return savedNewSubject;
             })
-            .catch((error) => {
+            .catch((_error) => {
                 console.log("Error");
                 return null;
             });

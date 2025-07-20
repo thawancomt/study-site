@@ -1,7 +1,7 @@
 // components/NoTitleHoverButton.tsx
 import { AnimatePresence, motion } from "framer-motion"; // motion is still needed for motion.span
 import { CirclePlus } from "lucide-react";
-import React, { type ReactNode, useState } from "react";
+import { useState } from "react";
 import { useNoteContext } from "../../../contextProcessors/NotesServiceContext";
 import { Button } from "./Button";
 import {

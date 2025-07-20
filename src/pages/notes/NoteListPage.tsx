@@ -72,7 +72,7 @@ export default function NotesPage() {
         setTimeout(() => {
             setLoaded(true);
         }, 50);
-    }, []);
+    }, [loadNotes]);
 
     useEffect(() => {
         console.log(noteSearchQuery);

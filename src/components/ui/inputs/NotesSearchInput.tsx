@@ -3,7 +3,9 @@ import type { Dispatch, SetStateAction } from "react";
 
 interface NotesSearchInputProps {
     value?: string;
-    onTyping?: (newValue: string) => void | Dispatch<SetStateAction<string>>;
+    onTyping?: (
+        newValue: string,
+    ) => undefined | Dispatch<SetStateAction<string>>;
     icon?: React.ReactNode;
     className?: string;
 }

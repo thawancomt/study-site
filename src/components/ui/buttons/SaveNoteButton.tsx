@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"; // motion is still needed for motion.span
 import { Sparkles } from "lucide-react"; // Sparkles if it's the default icon
-import React, { type ReactNode, useState } from "react";
+import { type ReactNode, useState } from "react";
 import { Button } from "./Button";
 
 // Existing interface, now we use it for SaveNoteButton's specific props
@@ -31,7 +31,7 @@ export default function SaveNoteButton({
     icon,
 }: SaveNoteButtonProps) {
     const combinedClasses = `${baseButtonStyles} ${buttonTypeStyles[type]}`;
-    const [animate, setAnimate] = useState(0);
+    const [_animate, _setAnimate] = useState(0);
 
     return (
         <Button

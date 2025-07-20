@@ -1,6 +1,3 @@
-import { AnimatePresence, motion, scale } from "framer-motion";
-import type React from "react";
-import { useRef, useState } from "react";
 import type { SubjectsEntity } from "../../ORM/subjects/entities/subjects.entity";
 
 interface tipProps {

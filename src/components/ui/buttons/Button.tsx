@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
-import React, { type ReactNode, useState } from "react";
+import type { ReactNode } from "react";
 
 // Define the common props for our base button
 interface ButtonProps {

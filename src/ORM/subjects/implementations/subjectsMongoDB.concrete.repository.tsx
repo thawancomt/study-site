@@ -14,9 +14,9 @@ export default class MongoDBSubjectRepo
         }).then((res) => res.json());
     }
 
-    delete(id: string): Promise<boolean> {}
+    delete(_id: string): Promise<boolean> {}
 
-    findById(id: string): Promise<SubjectsEntity | null> {}
+    findById(_id: string): Promise<SubjectsEntity | null> {}
 
     async getByName(name: string) {
         const query = `name=${name}`;
@@ -32,7 +32,7 @@ export default class MongoDBSubjectRepo
     }
 
     update(
-        id: string,
-        entity: Partial<SubjectsEntity>,
+        _id: string,
+        _entity: Partial<SubjectsEntity>,
     ): Promise<SubjectsEntity | null> {}
 }

@@ -34,17 +34,17 @@ export class IndexDBSubjectRepository implements ISubjectsRepository {
         };
     }
 
-    public delete(id: string): Promise<boolean> {
+    public delete(_id: string): Promise<boolean> {
         throw new Error("Not implemented yet");
     }
 
-    public findById(id: string): Promise<SubjectsEntity | null> {
+    public findById(_id: string): Promise<SubjectsEntity | null> {
         throw new Error("Not implemented yet");
     }
 
     public update(
-        id: string,
-        entity: Partial<SubjectsEntity>,
+        _id: string,
+        _entity: Partial<SubjectsEntity>,
     ): Promise<SubjectsEntity | null> {
         throw new Error("Not implemented yet");
     }
