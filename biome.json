@@ -1,9 +1,11 @@
 {
-	"linter": {
-		"rules": {
-			"a11y": {
-				"noStaticElementInteractions": "off"
-			}
-		}
-	}
+    "formatter": {
+        "indentStyle": "space",
+        "indentWidth": 4
+    },
+    "linter": {
+        "rules": {
+            "recommended": true
+        }
+    }
 }
