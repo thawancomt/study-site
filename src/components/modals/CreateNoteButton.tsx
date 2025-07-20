@@ -7,11 +7,11 @@ import SaveNoteButton from "../ui/buttons/SaveNoteButton";
 export default function CreateNoteFluent() {
 	const { showCreateModal, toggleCreateModalVisibility } = useNoteContext();
 	return (
-		<div className="fixed bottom-4 right-4">
+		<div className="fixed bottom-4 right-4  ">
 			<NoTitleHoverButton
 				callBack={toggleCreateModalVisibility}
 				title={showCreateModal ? "Close" : "Create note"}
-				type="success"
+				type="info"
 			/>
 		</div>
 	);

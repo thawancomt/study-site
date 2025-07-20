@@ -1,16 +1,13 @@
 // src/pages/NotesPage.jsx
 
 import { AnimatePresence, motion } from "framer-motion";
+import { ArrowUpNarrowWide, NotebookPen } from "lucide-react";
 import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
 import InsightCardForNoteListPage from "../../components/cards/InsightCardForNoteListPage";
 import NoteResumeCard from "../../components/cards/NoteResumeCard";
 import CreateNoteFluent from "../../components/modals/CreateNoteButton";
-import CreateNote from "../../components/modals/CreateNoteModal";
-import ReadNoteModal from "../../components/modals/ReadNoteModal";
 import NotesSearchInput from "../../components/ui/inputs/NotesSearchInput";
 import { useNoteContext } from "../../contextProcessors/NotesServiceContext";
-import { useNoteModal } from "../../contextProcessors/ReadNoteModalContext";
 import type { NoteEntity } from "../../ORM/notes/entities/notes.entity";
 
 const containerVariants = {
@@ -54,10 +51,16 @@ export default function NotesPage() {
 	const [loaded, setLoaded] = useState(false);
 	const [noteSearchQuery, setNoteSearchQuery] = useState("");
 
-
 	// Note: It's often better to initialize these outside the component
 	// or use useMemo to avoid re-creating them on every render.
-	const { service, notes, setNotes, noteForModal, setNoteForModal, toggleReadNoteModalVisibility } = useNoteContext();
+	const {
+		service,
+		notes,
+		setNotes,
+		noteForModal,
+		setNoteForModal,
+		toggleReadNoteModalVisibility,
+	} = useNoteContext();
 
 	async function loadNotes() {
 		const result = await service.getAll();
@@ -71,7 +74,6 @@ export default function NotesPage() {
 		}, 50);
 	}, []);
 
-
 	useEffect(() => {
 		console.log(noteSearchQuery);
 	}, [noteSearchQuery]);
@@ -81,13 +83,9 @@ export default function NotesPage() {
 	}
 
 	function handleOpenModal(note: NoteEntity) {
-		
-		toggleReadNoteModalVisibility()
-		setNoteForModal(note)
-		
+		toggleReadNoteModalVisibility();
+		setNoteForModal(note);
 	}
-
-	
 
 	return (
 		<>
@@ -107,18 +105,20 @@ export default function NotesPage() {
 					animate="show"
 				>
 					<InsightCardForNoteListPage
-						colorVariant="yellow"
+						colorVariant="purple"
 						title="Typed words"
 						value={`${countWords(notes)}`}
+						icon={<ArrowUpNarrowWide />}
 					/>
 					<InsightCardForNoteListPage
-						colorVariant="green"
+						colorVariant="blue"
 						title="Total notes"
 						value={`${notes.length}`}
+						icon={<NotebookPen />}
 					/>
 					<InsightCardForNoteListPage
 						colorVariant="purple"
-						title="Most used words"
+						title="Most used word"
 						value={`"${mostUsedWord(notes)}"`}
 					/>
 				</motion.section>
@@ -133,7 +133,7 @@ export default function NotesPage() {
 					animate={loaded ? "show" : "hidden"}
 				>
 					<div className={"!w-full !max-w-full "}>
-						<NotesSearchInput onTyping={setNoteSearchQuery} className=""/>
+						<NotesSearchInput onTyping={setNoteSearchQuery} className="" />
 					</div>
 
 					{notes.length && notes.length ? (
@@ -166,7 +166,7 @@ export default function NotesPage() {
 					)}
 				</motion.div>
 			</AnimatePresence>
-			<CreateNoteFluent></CreateNoteFluent>
+			<CreateNoteFluent/>
 		</>
 	);
 }
