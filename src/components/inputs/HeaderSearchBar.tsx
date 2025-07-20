@@ -13,7 +13,7 @@ export default function HeaderSearchBar() {
 	const [fetchData] = useDebounce(query, 400);
 
 	return (
-		<div className="relative w-full max-w-md">
+		<div className="relative  max-w-md flex  shrink-1">
 			<input
 				onFocus={() => {
 					setShowModal(true);
